@@ -1,0 +1,26 @@
+# Operating System Files
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# IDE / Editor
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Environment / Secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs / Temporary
+*.log
+logs/
+log/
+tmp/
+temp/
+
