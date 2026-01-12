@@ -63,14 +63,25 @@ cd mobile
 pnpm install
 ```
 
-#### 3. Install [pre-commit](https://pre-commit.com/) hooks
+#### 3. Create `.env` files
+
+Copy the `.env.example` file to `.env` in both the backend and mobile directories.
+
+```bash
+cp .env.example .env
+```
+
+Make sure to update variables in the `.env` file with your own values.
+
+#### 4. Install [pre-commit](https://pre-commit.com/) hooks
 
 ```sh
 pipx install pre-commit
 pre-commit install --install-hooks
 ```
 
-#### 4. Run the application
+#### 5. Run the application
+
 Two terminals are needed
 
 ```bash
