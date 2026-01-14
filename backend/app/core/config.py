@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Application
-    app_name: str = "Backend"
+    app_name: str = "Manobela Backend"
     environment: str = "development"
 
     # CORS
