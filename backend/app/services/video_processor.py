@@ -11,7 +11,6 @@ from app.services.connection_manager import ConnectionManager
 from app.services.face_landmarks import ESSENTIAL_LANDMARKS
 from app.services.metrics.metric_manager import MetricManager
 from app.services.smoother import Smoother
-from app.services.yawn_detector import YawnDetector
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,6 @@ def process_video_frame(
 
     # TODO: To integrate yawnDetector.py to face_landmarks
     # Probably add indeces to land_marks.py rather than a linear implementation
-    yawn_detector = YawnDetector()
 
     h, w = img_bgr.shape[:2]
 

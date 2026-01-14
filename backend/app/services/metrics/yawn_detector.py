@@ -1,28 +1,34 @@
+import logging
 import math
-from typing import Dict, List, Optional
+from typing import Any, Dict, Optional, Sequence
 
-from app.services.face_landmarks import INNER_LIP, OUTER_LIP
+from app.services.metrics.base_metric import BaseMetric
 from app.services.smoother import Smoother
 
+logger = logging.getLogger(__name__)
 
-def _dist(p1, p2) -> float:
+
+def _dist(p1: Sequence[float], p2: Sequence[float]) -> float:
     return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
 
-class YawnDetector:
+class YawnMetric(BaseMetric):
     """
-    Detects yawning using Mouth Aspect Ratio (MAR).
+    Yawn detection metric using Mouth Aspect Ratio (MAR).
+    Tracks sustained mouth opening to infer yawns.
+    """
 
-    Usage:
-        detector = YawnDetector()
-        result = detector.update(landmarks)
-    """
+    DEFAULT_MAR_THRESHOLD = 0.6
+    DEFAULT_MIN_DURATION_FRAMES = 15
+    DEFAULT_SMOOTHING_ALPHA = 0.3
+
+    REQUIRED_INDICES = (13, 14, 61, 291)
 
     def __init__(
         self,
-        mar_threshold: float = 0.6,
-        min_duration_frames: int = 15,
-        smoothing_alpha: float = 0.3,
+        mar_threshold: float = DEFAULT_MAR_THRESHOLD,
+        min_duration_frames: int = DEFAULT_MIN_DURATION_FRAMES,
+        smoothing_alpha: float = DEFAULT_SMOOTHING_ALPHA,
     ):
         """
         Args:
@@ -32,58 +38,36 @@ class YawnDetector:
         """
         self.mar_threshold = mar_threshold
         self.min_duration_frames = min_duration_frames
-
         self.smoother = Smoother(alpha=smoothing_alpha)
         self._open_counter = 0
         self._yawn_active = False
 
-    def compute_mar(self, landmarks: Dict[int, dict]) -> Optional[float]:
-        """
-        Compute MAR from essential landmarks.
-
-        landmarks: { index: {"x": float, "y": float, "z": float? } }
-        """
+    def _compute_mar(
+        self, landmarks: Sequence[Sequence[float]]
+    ) -> Optional[float]:
         try:
-            # Vertical mouth opening (inner lips)
             top = landmarks[13]
             bottom = landmarks[14]
-
-            # Mouth width (outer lips)
             left = landmarks[61]
             right = landmarks[291]
-
-            vertical = _dist((top["x"], top["y"]), (bottom["x"], bottom["y"]))
-            horizontal = _dist((left["x"], left["y"]), (right["x"], right["y"]))
-
-            if horizontal == 0:
-                return None
-
-            return vertical / horizontal
-
-        except KeyError:
+        except IndexError as e:
+            logger.debug("Yawn metric landmark extraction failed: %s", e)
             return None
 
-    def update(self, landmarks: Optional[Dict[int, dict]]) -> dict:
-        """
-        Update yawning state.
+        horizontal = _dist(left, right)
+        if horizontal == 0:
+            return None
 
-        Returns:
-            {
-                "mar": float | None,
-                "yawning": bool,
-                "yawn_progress": float (0–1)
-            }
-        """
-        if landmarks is None:
-            self._open_counter = 0
-            self._yawn_active = False
-            return {
-                "mar": None,
-                "yawning": False,
-                "yawn_progress": 0.0,
-            }
+        vertical = _dist(top, bottom)
+        return vertical / horizontal
 
-        mar = self.compute_mar(landmarks)
+    def update(self, frame_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        landmarks = frame_data.get("landmarks")
+        if not landmarks:
+            self.reset()
+            return None
+
+        mar = self._compute_mar(landmarks)
         smoothed = self.smoother.update([mar] if mar is not None else None)
 
         if smoothed is None:
@@ -114,3 +98,8 @@ class YawnDetector:
             "yawning": self._yawn_active,
             "yawn_progress": progress,
         }
+
+    def reset(self):
+        self.smoother.reset()
+        self._open_counter = 0
+        self._yawn_active = False
