@@ -18,7 +18,8 @@ from app.services.smoother import Smoother
 logger = logging.getLogger(__name__)
 
 
-TARGET_INTERVAL_MS = 100  # ~10 FPS processing target
+TARGET_FPS = 15
+TARGET_INTERVAL_SEC = 1 / TARGET_FPS
 MAX_WIDTH = 480
 RENDER_LANDMARKS_FULL = False  # Option to render all landmarks or only essential ones
 
@@ -125,7 +126,7 @@ async def process_video_frames(
                 # Schedule frame processing at a fixed interval to avoid drift.
                 # The next processing time is derived from the previous scheduled time,
                 # not the actual processing completion time.
-                next_process_time = last_process_time + TARGET_INTERVAL_MS / 1000
+                next_process_time = last_process_time + TARGET_INTERVAL_SEC
                 sleep_duration = next_process_time - time.perf_counter()
 
                 if sleep_duration > 0:

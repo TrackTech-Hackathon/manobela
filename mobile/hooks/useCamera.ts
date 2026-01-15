@@ -24,7 +24,7 @@ export function useCamera(): UseCameraReturn {
             facingMode: 'user', // front camera
             width: { ideal: 480, max: 640 },
             height: { ideal: 320, max: 480 },
-            frameRate: { ideal: 10, max: 15 },
+            frameRate: { ideal: 15, max: 24 },
           },
         };
 
