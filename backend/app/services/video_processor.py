@@ -155,8 +155,9 @@ async def process_video_frames(
                 # Get data channel
                 channel = connection_manager.data_channels.get(client_id)
                 if not channel or channel.readyState != "open":
-                    logger.info("Data channel closed for %s; skipping frame", client_id)
-                    break
+                    logger.info("Data channel not ready for %s; waiting...", client_id)
+                    await asyncio.sleep(0.05)  # small delay
+                    continue  # skip this frame, but keep processing future frames
 
                 # Convert frame to numpy array
                 img = frame.to_ndarray(format="bgr24")
@@ -193,7 +194,8 @@ async def process_video_frames(
                         "Data channel send failed for %s; stopping processing",
                         client_id,
                     )
-                    break
+                    await asyncio.sleep(0.05)
+                    continue
 
                 # Update counters
                 processed_frames += 1
