@@ -1,12 +1,12 @@
 import logging
 import math
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence, Tuple
 
 from app.services.metrics.base_metric import BaseMetric
 from app.services.smoother import Smoother
 
-logger = logging.getLogger(__name__)
-
+Point2D = Sequence
+Landmarks = Sequence[Point2D]
 
 def _dist(p1: Sequence[float], p2: Sequence[float]) -> float:
     return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
@@ -22,13 +22,16 @@ class YawnMetric(BaseMetric):
     DEFAULT_MIN_DURATION_FRAMES = 15
     DEFAULT_SMOOTHING_ALPHA = 0.3
 
-    REQUIRED_INDICES = (13, 14, 61, 291)
+    REQUIRED_INDICES: Tuple[int, int, int, int] = (13, 14, 61, 291)
 
     def __init__(
         self,
         mar_threshold: float = DEFAULT_MAR_THRESHOLD,
         min_duration_frames: int = DEFAULT_MIN_DURATION_FRAMES,
         smoothing_alpha: float = DEFAULT_SMOOTHING_ALPHA,
+
+        # Hysteresis: close threshold could be lower than open threshold
+        mar_close_threshold: Optional[float] = None,
     ):
         """
         Args:
@@ -37,8 +40,17 @@ class YawnMetric(BaseMetric):
             smoothing_alpha: EMA smoothing for MAR.
         """
         self.mar_threshold = mar_threshold
+
+        # mar close threshold with default hysteresis
+        self.mar_close_threshold = (
+            mar_close_threshold
+            if mar_close_threshold is not None
+            else mar_threshold * 0.9
+        )
+
         self.min_duration_frames = min_duration_frames
         self.smoother = Smoother(alpha=smoothing_alpha)
+
         self._open_counter = 0
         self._yawn_active = False
 
@@ -47,17 +59,23 @@ class YawnMetric(BaseMetric):
     def _compute_mar(
         self, landmarks: Sequence[Sequence[float]]
     ) -> Optional[float]:
-        try:
-            top = landmarks[13]
-            bottom = landmarks[14]
-            left = landmarks[61]
-            right = landmarks[291]
-        except IndexError as e:
-            logger.debug("Yawn metric landmark extraction failed: %s", e)
+         # Validate we can index required landmarks
+        max_idx = max(self.REQUIRED_INDICES)
+        if len(landmarks) <= max_idx:
+            return None
+
+
+        top = landmarks[13]
+        bottom = landmarks[14]
+        left = landmarks[61]
+        right = landmarks[291]
+
+        # Validate each point has x,y
+        if any(len(p) < 2 for p in (top, bottom, left, right)):
             return None
 
         horizontal = _dist(left, right)
-        if horizontal == 0:
+        if horizontal <= 1e-9:
             return None
 
         vertical = _dist(top, bottom)
@@ -66,6 +84,7 @@ class YawnMetric(BaseMetric):
     def update(self, frame_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         landmarks = frame_data.get("landmarks")
         if not landmarks:
+            # Consistent output shape
             self.reset()
             return None
 
@@ -81,14 +100,21 @@ class YawnMetric(BaseMetric):
 
         mar_value = smoothed[0]
 
-        if mar_value > self.mar_threshold:
-            self._open_counter += 1
-        else:
-            self._open_counter = 0
-            self._yawn_active = False
+        # Hysteresis logic
+        if not self._yawn_active:
+            if mar_value > self.mar_threshold:
+                self._open_counter += 1
+            else:
+                self._open_counter = 0
+                self._yawn_active = False
 
-        if self._open_counter >= self.min_duration_frames:
-            self._yawn_active = True
+            if self._open_counter >= self.min_duration_frames:
+                self._yawn_active = True
+        else:
+            # Once active, keep it until we clearly close
+            if mar_value < self.mar_close_threshold:
+                self._yawn_active = False
+                self._open_counter = 0 # Reset after it ends
 
         progress = min(
             self._open_counter / self.min_duration_frames,
