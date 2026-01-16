@@ -105,7 +105,7 @@ class YawnMetric(BaseMetric):
 
         if mar_value > self.mar_threshold:
             self._open_counter += 1
-        else:
+        elif mar_value < self.mar_close_threshold:
             self._open_counter = 0
             self._yawn_active = False
 
