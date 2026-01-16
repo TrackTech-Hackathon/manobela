@@ -4,12 +4,11 @@ from typing import Any, Dict, Optional, Sequence, Tuple
 
 from app.services.metrics.base_metric import BaseMetric
 from app.services.smoother import Smoother
+from app.services.metrics.utils.geometry import euclidean_dist
+from app.services.metrics.utils.mar import _compute_mar
 
 Point2D = Sequence
 Landmarks = Sequence[Point2D]
-
-def _dist(p1: Sequence[float], p2: Sequence[float]) -> float:
-    return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
 
 class YawnMetric(BaseMetric):
@@ -22,7 +21,11 @@ class YawnMetric(BaseMetric):
     DEFAULT_MIN_DURATION_FRAMES = 15
     DEFAULT_SMOOTHING_ALPHA = 0.3
 
-    REQUIRED_INDICES: Tuple[int, int, int, int] = (13, 14, 61, 291)
+    REQUIRED_INDICES: Tuple[int, int, int, int] = ( 13, # Upper lip center point
+                                                    14, # Lower lip center point
+                                                    61,# Left mouth corner
+                                                    291 # Right mouth corner
+                                                    )
 
     def __init__(
 
@@ -69,33 +72,6 @@ class YawnMetric(BaseMetric):
 
         self._open_counter = 0
         self._yawn_active = False
-
-
-    # May Integrate mar.py in utils
-    def _compute_mar(
-        self, landmarks: Sequence[Sequence[float]]
-    ) -> Optional[float]:
-         # Validate we can index required landmarks
-        max_idx = max(self.REQUIRED_INDICES)
-        if len(landmarks) <= max_idx:
-            return None
-
-
-        top = landmarks[13]
-        bottom = landmarks[14]
-        left = landmarks[61]
-        right = landmarks[291]
-
-        # Validate each point has x,y
-        if any(len(p) < 2 for p in (top, bottom, left, right)):
-            return None
-
-        horizontal = _dist(left, right)
-        if horizontal <= 1e-9:
-            return None
-
-        vertical = _dist(top, bottom)
-        return vertical / horizontal
 
     def update(self, frame_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         landmarks = frame_data.get("landmarks")
