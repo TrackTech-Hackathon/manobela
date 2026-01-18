@@ -9,7 +9,7 @@ from app.core.dependencies import (
     ConnectionManagerDep,
     ConnectionManagerWsDep,
     FaceLandmarkerDepWs,
-    ObjectDetectorDep,
+    ObjectDetectorDepWs,
 )
 from app.models.webrtc import MessageType
 from app.services.webrtc_handler import (
@@ -28,7 +28,7 @@ async def driver_monitoring(
     websocket: WebSocket,
     connection_manager: ConnectionManagerWsDep,
     face_landmarker: FaceLandmarkerDepWs,
-    object_detector: ObjectDetectorDep,
+    object_detector: ObjectDetectorDepWs,
 ):
     """
     WebSocket endpoint that handles WebRTC signaling messages for a single client.

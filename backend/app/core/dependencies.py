@@ -28,7 +28,11 @@ def get_face_landmarker_ws(websocket: WebSocket) -> "vision.FaceLandmarker":
     return websocket.app.state.face_landmarker
 
 
-def get_object_detector(websocket: WebSocket) -> ObjectDetector:
+def get_object_detector(request: Request) -> ObjectDetector:
+    return request.app.state.object_detector
+
+
+def get_object_detector_ws(websocket: WebSocket) -> ObjectDetector:
     return websocket.app.state.object_detector
 
 
@@ -41,3 +45,4 @@ FaceLandmarkerDepWs = Annotated[
     "vision.FaceLandmarker", Depends(get_face_landmarker_ws)
 ]
 ObjectDetectorDep = Annotated[ObjectDetector, Depends(get_object_detector)]
+ObjectDetectorDepWs = Annotated[ObjectDetector, Depends(get_object_detector_ws)]
