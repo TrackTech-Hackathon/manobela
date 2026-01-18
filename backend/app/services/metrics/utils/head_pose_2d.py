@@ -4,8 +4,6 @@ No 3D coordinates or camera calibration required.
 """
 import math
 from typing import List, Tuple
-from venv import logger
-
 from app.services.metrics.utils.geometry import euclidean_dist
 
 # Key landmark indices for head pose estimation (MediaPipe 468 landmarks)
@@ -153,10 +151,6 @@ def compute_head_pose_angles_2d(
         - Pitch: positive = looking up, negative = looking down
         - Roll: positive = clockwise tilt, negative = counterclockwise tilt
     """
-    REQUIRED_LANDMARKS = 468
-    if len(landmarks) < REQUIRED_LANDMARKS:
-        logger.warning(f"Expected {REQUIRED_LANDMARKS} landmarks, got {len(landmarks)}. Head pose may be inaccurate.")
-        # Optionally return (0.0, 0.0, 0.0) or skip computation
 
     yaw = compute_yaw_angle(landmarks)
     pitch = compute_pitch_angle(landmarks)
