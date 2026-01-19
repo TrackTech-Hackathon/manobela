@@ -7,8 +7,8 @@ from typing import Protocol
 import cv2
 import numpy as np
 import onnxruntime as ort
+from pydantic import BaseModel
 
-from app.models.inference import ObjectDetection
 from app.services.utils.image_utils import letterbox
 
 logger = logging.getLogger(__name__)
@@ -19,6 +19,16 @@ MODEL_PATH = PROJECT_ROOT / "assets" / "models" / "yolov8n.onnx"
 
 # Essential classes to filter out from object detections
 ESSENTIAL_CLASSES: list[int] = [67]  # cell phone
+
+
+class ObjectDetection(BaseModel):
+    """
+    Object detection result for a single detected object.
+    """
+
+    bbox: list[float]
+    conf: float
+    class_id: int
 
 
 class ObjectDetector(Protocol):

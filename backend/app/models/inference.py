@@ -3,21 +3,12 @@ from typing import Optional
 from pydantic import BaseModel
 
 from app.services.metrics.metric_manager import MetricsOutput
+from app.services.object_detector import ObjectDetection
 
 
 class Resolution(BaseModel):
     width: int
     height: int
-
-
-class ObjectDetection(BaseModel):
-    """
-    Object detection result for a single detected object.
-    """
-
-    bbox: list[float]
-    conf: float
-    class_id: int
 
 
 class InferenceData(BaseModel):
