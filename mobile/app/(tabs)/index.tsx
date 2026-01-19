@@ -1,23 +1,17 @@
 import { useCallback } from 'react';
-import { Stack } from 'expo-router';
 import { View, ScrollView } from 'react-native';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { useCamera } from '@/hooks/useCamera';
 import { useMonitoringSession } from '@/hooks/useMonitoringSession';
 import { MediaStreamView } from '@/components/media-stream-view';
 import { ConnectionStatus } from '@/components/connection-status';
 import { MonitoringControls } from '@/components/monitoring-controls';
 import { InferenceDisplay } from '@/components/inference-display';
-
-const SCREEN_OPTIONS = {
-  title: 'Manobela',
-  headerRight: () => <ThemeToggle />,
-};
+import { Stack } from 'expo-router';
 
 const WS_BASE = process.env.EXPO_PUBLIC_WS_BASE!;
 const WS_URL = `${WS_BASE}/driver-monitoring`;
 
-export default function Screen() {
+export default function MonitorScreen() {
   const { localStream } = useCamera();
 
   const {
@@ -46,7 +40,7 @@ export default function Screen() {
 
   return (
     <ScrollView className="flex-1 px-4 py-4">
-      <Stack.Screen options={SCREEN_OPTIONS} />
+      <Stack.Screen options={{ title: 'Monitor' }} />
 
       <ConnectionStatus
         sessionState={sessionState}
