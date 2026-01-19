@@ -2,8 +2,8 @@ import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from app.services.metrics.base_metric import BaseMetric
-from app.services.metrics.utils.calc import in_range
 from app.services.metrics.utils.geometry import average_point
+from app.services.metrics.utils.math import in_range
 
 logger = logging.getLogger(__name__)
 
