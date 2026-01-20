@@ -21,7 +21,7 @@ import { Icon } from '@/components/ui/icon';
 const LINKS = {
   faq: 'https://github.com/popcorn-prophets/manobela/blob/main/README.md',
   issues: 'https://github.com/popcorn-prophets/manobela/issues',
-  legal: 'https://github.com/popcorn-prophets/manobela/blob/master/LICENSE',
+  legal: 'https://github.com/popcorn-prophets/manobela/blob/main/LICENSE',
   privacy: 'https://github.com/popcorn-prophets/manobela/blob/master/CODE_OF_CONDUCT.md',
   terms: 'https://github.com/popcorn-prophets/manobela/blob/master/LICENSE',
   dataProtection: 'https://github.com/popcorn-prophets/manobela/blob/master/CODE_OF_CONDUCT.md',
@@ -44,39 +44,46 @@ function SettingRow({
   rightElement,
   disabled,
 }: SettingRowProps) {
-  const Container = onPress ? Pressable : View;
 
-  const containerProps = onPress
-    ? {
-        accessibilityRole: 'button' as const,
-        disabled,
-        onPress: disabled ? undefined : onPress,
-      }
-    : {};
+// Faint glowing code block -- start --
+const baseClassName = 'flex-row items-center justify-between rounded-2xl px-4 py-3';
+const content = (pressed?: boolean) => (
+  <View
+    className={[
+      baseClassName,
+      disabled ? 'bg-card opacity-50' : pressed ? 'bg-muted/40' : 'bg-card',
+    ].join(' ')}
+  >
+    <View className="flex-row items-center">
+      <View className="mr-3 h-9 w-9 items-center justify-center rounded-full bg-muted">
+        <Icon as={icon} className="text-foreground" size={18} />
+      </View>
 
-  return (
-    <Container
-      className="flex-row items-center justify-between rounded-2xl bg-card px-4 py-3"
-      {...containerProps}>
-      <View className="flex-row items-center">
-        <View className="mr-3 h-9 w-9 items-center justify-center rounded-full bg-muted">
-          <Icon as={icon} className="text-foreground" size={18} />
-        </View>
-        <View>
-          <Text className="text-base font-medium text-foreground">{label}</Text>
-          {value ? (
-            <Text className="text-sm text-muted-foreground">{value}</Text>
-          ) : null}
-        </View>
+      <View>
+        <Text className="text-base font-medium text-foreground">{label}</Text>
+        {value ? <Text className="text-sm text-muted-foreground">{value}</Text> : null}
       </View>
-      <View className="flex-row items-center">
-        {rightElement}
-        {onPress ? (
-          <Icon as={ChevronRight} className="ml-2 text-muted-foreground" size={18} />
-        ) : null}
-      </View>
-    </Container>
-  );
+    </View>
+
+    <View className="flex-row items-center">
+      {rightElement}
+      {onPress ? <Icon as={ChevronRight} className="ml-2 text-muted-foreground" size={18} /> : null}
+    </View>
+  </View>
+);
+
+if (!onPress) return content(false);
+
+return (
+  <Pressable
+    accessibilityRole="button"
+    disabled={disabled}
+    onPress={disabled ? undefined : onPress}
+  >
+    {({ pressed }) => content(pressed)}
+  </Pressable>
+);
+// Faint glowing code block -- end --
 }
 
 function Section({

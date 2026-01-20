@@ -20,7 +20,6 @@ export default function MonitorScreen() {
   },[settings.wsBaseUrl]);
 
 
-
   const {
     sessionState,
     inferenceData,
