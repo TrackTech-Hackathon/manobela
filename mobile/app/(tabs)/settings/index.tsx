@@ -164,6 +164,8 @@ export default function SettingsScreen() {
           label="Legal & Compliance"
           onPress={() => handleOpenLink(LINKS.legal)}
         />
+      </Section>
+      <Section title = "API">
         <SettingRow
           icon={Globe}
           label="API & WebSocket"
