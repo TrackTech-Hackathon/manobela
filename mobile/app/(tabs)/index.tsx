@@ -50,11 +50,17 @@ export default function MonitorScreen() {
         error={error}
       />
 
-      <View className="mb-4 h-96 w-full">
+      <View className="mb-4 w-full">
         <MediaStreamView
           stream={localStream}
           sessionState={sessionState}
           inferenceData={inferenceData}
+          style={{
+            width: '100%',
+            aspectRatio:
+              (inferenceData?.resolution?.width ?? 480) /
+              (inferenceData?.resolution?.height ?? 320),
+          }}
         />
       </View>
 

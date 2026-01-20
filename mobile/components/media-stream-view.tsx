@@ -1,10 +1,10 @@
 import { MediaStream, RTCView } from 'react-native-webrtc';
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { FacialLandmarkOverlay } from './facial-landmark-overlay';
 import { SessionState } from '@/hooks/useMonitoringSession';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { FacialLandmarkOverlay } from './facial-landmark-overlay';
 import { ObjectDetectionOverlay } from './object-detection-overlay';
 import { InferenceData } from '@/types/inference';
 
@@ -50,14 +50,14 @@ export const MediaStreamView = ({
 
   return (
     <View
-      style={[{ width: '100%', height: '100%' }, style]}
+      style={[{ width: '100%', height: '100%', flex: 1 }, style]}
       onLayout={(event) => {
         const { width, height } = event.nativeEvent.layout;
         setViewDimensions({ width, height });
       }}>
       <RTCView
         streamURL={stream.toURL()}
-        objectFit="contain"
+        objectFit="cover"
         style={StyleSheet.absoluteFill}
         mirror={mirror}
       />
