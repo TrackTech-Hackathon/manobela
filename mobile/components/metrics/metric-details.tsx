@@ -13,6 +13,8 @@ const LABEL_MAPPINGS: Record<string, string> = {
   yawning: 'Yawning',
   yawn_progress: 'Yawn Progress',
   yawn_count: 'Yawn Count',
+  yawn_rate: 'Yawn Rate',
+  yawn_rate_alert: 'Yawn Rate Alert',
   head_pose_alert: 'Head Pose Alert',
   yaw_alert: 'Yaw Alert',
   pitch_alert: 'Pitch Alert',
@@ -29,7 +31,7 @@ const LABEL_MAPPINGS: Record<string, string> = {
 } as const;
 
 /** Metric data keys that are percentages */
-const PERCENTAGE_KEYS = new Set(['perclos', 'yawn_progress', 'phone_usage']);
+const PERCENTAGE_KEYS = new Set(['perclos', 'yawn_progress', 'yawn_rate', 'phone_usage']);
 
 /** Formats a metric label with a human-readable name */
 const formatLabel = (key: string): string => {

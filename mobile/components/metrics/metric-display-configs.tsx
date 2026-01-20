@@ -23,7 +23,7 @@ export const METRIC_DISPLAY_CONFIGS: Record<MetricId, MetricConfig> = {
     label: 'Yawn',
     getWarningState: (data) => data?.yawning === true,
     getFillRatio: (data) =>
-      data?.yawn_count != null ? Math.max(0, Math.min(1, data.yawn_count / 5)) : undefined,
+      data?.yawn_rate != null ? Math.max(0, Math.min(1, data.yawn_rate)) : undefined,
   },
   head_pose: {
     icon: ({ size, color }) => <MaterialCommunityIcons name="head" size={size} color={color} />,

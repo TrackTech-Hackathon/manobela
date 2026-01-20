@@ -21,6 +21,8 @@ export interface YawnMetricOutput {
   yawning: boolean;
   yawn_progress: number;
   yawn_count: number;
+  yawn_rate: number;
+  yawn_rate_alert: boolean;
 }
 export interface HeadPoseMetricOutput {
   head_pose_alert: boolean;
