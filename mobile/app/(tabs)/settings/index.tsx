@@ -164,7 +164,11 @@ export default function SettingsScreen() {
           label="Legal & Compliance"
           onPress={() => handleOpenLink(LINKS.legal)}
         />
-
+        <SettingRow
+          icon={Globe}
+          label="API & WebSocket"
+          onPress={() => router.push('/settings/api-websocket')}
+        />
       </Section>
 
       <Section title="Legal & Compliance">
