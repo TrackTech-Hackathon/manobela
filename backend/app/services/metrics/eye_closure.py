@@ -123,6 +123,8 @@ class EyeClosureMetric(BaseMetric):
     def reset(self):
         self.ear_smoother.reset()
         self.eye_history.clear()
+        self._eye_closed_duration_frames = 0
+        self._eye_closed = False
 
     def _build_output(self, ear: Optional[float]) -> EyeClosureMetricOutput:
         perclos = self._perclos()

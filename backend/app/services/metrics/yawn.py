@@ -59,8 +59,6 @@ class YawnMetric(BaseMetric):
         if min_yawn_duration_sec <= 0:
             raise ValueError("min_yawn_duration_sec must be positive.")
 
-        self._frames_processed = 0
-
         self._mar_threshold_open = mar_threshold
         self._mar_threshold_close = mar_threshold * hysteresis_ratio
 
@@ -79,8 +77,6 @@ class YawnMetric(BaseMetric):
         self.mar_smoother = ScalarSmoother(alpha=smoother_alpha, max_missing=3)
 
     def update(self, context: FrameContext) -> YawnMetricOutput:
-        self._frames_processed += 1
-
         landmarks = context.face_landmarks
         if not landmarks:
             return self._build_output(mar=None)
