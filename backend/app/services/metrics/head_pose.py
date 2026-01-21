@@ -75,7 +75,7 @@ class HeadPoseMetric(BaseMetric):
         self.pitch_threshold = pitch_threshold
         self.roll_threshold = roll_threshold
 
-        fps = getattr(settings, "target_fps", 30)
+        fps = getattr(settings, "target_fps", 15)
         self.min_sustained_frames = max(1, int(min_sustained_sec * fps))
 
         self.yaw_counter = 0

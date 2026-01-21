@@ -65,7 +65,7 @@ class GazeMetric(BaseMetric):
         self.horizontal_range = horizontal_range
         self.vertical_range = vertical_range
 
-        fps = getattr(settings, "target_fps", 30)
+        fps = getattr(settings, "target_fps", 15)
         self.min_sustained_frames = max(1, int(min_sustained_sec * fps))
 
         self._sustained_out_of_range_frames = 0

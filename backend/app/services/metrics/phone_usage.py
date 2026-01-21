@@ -44,9 +44,7 @@ class PhoneUsageMetric(BaseMetric):
 
         self.conf = conf
 
-        fps = getattr(settings, "target_fps", 30)
-        if not isinstance(fps, (int, float)) or fps <= 0:
-            fps = 30
+        fps = getattr(settings, "target_fps", 15)
 
         self._min_usage_frames = max(1, int(min_usage_duration_sec * fps))
 
