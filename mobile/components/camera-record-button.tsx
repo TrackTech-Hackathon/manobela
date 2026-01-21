@@ -1,14 +1,12 @@
 import React from 'react';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
+import { colors } from '@/theme/colors';
 
 type CameraRecordButtonProps = {
   isRecording: boolean;
   disabled?: boolean;
   onPress: () => void;
 };
-
-const RECORD_RED = 'hsl(0, 84.2%, 60.2%)';
-const RECORD_RED_DISABLED = 'rgba(255, 0, 0, 0.55)';
 
 /**
  * Recording button for the camera view.
@@ -31,8 +29,8 @@ export const CameraRecordButton = ({
         <View
           style={[
             isRecording ? styles.stopSquare : styles.innerDot,
-            { backgroundColor: RECORD_RED },
-            disabled && { backgroundColor: RECORD_RED_DISABLED },
+            { backgroundColor: colors.destructive },
+            disabled && { backgroundColor: colors.destructiveDisabled },
           ]}
         />
       </View>
