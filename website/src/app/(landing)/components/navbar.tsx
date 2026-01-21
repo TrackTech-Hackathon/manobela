@@ -110,7 +110,7 @@ export function LandingNavbar() {
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <Logo size={16} />
                   </div>
-                  <SheetTitle className="text-lg font-semibold">ShadcnStore</SheetTitle>
+                  <SheetTitle className="text-lg font-semibold">Manobela</SheetTitle>
                   <div className="ml-auto flex items-center gap-2">
                     <Button
                       variant="ghost"
