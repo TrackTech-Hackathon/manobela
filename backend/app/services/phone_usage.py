@@ -56,11 +56,13 @@ class PhoneUsageMetric(BaseMetric):
     def update(self, context: FrameContext) -> PhoneUsageMetricOutput:
         obj_detections = context.object_detections
         if not obj_detections:
+            self._usage_counter = 0
+            self._phone_usage_active = False
             return self._build_output()
 
         phone_detected = any(
             d.conf >= self.conf and (d.class_id == PHONE_CLASS_ID)
-            for d in obj_detections or []
+            for d in obj_detections
         )
 
         if phone_detected:
