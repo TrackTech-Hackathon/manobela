@@ -20,6 +20,9 @@ export class AlertManager {
   private alertStates = new Map<string, AlertState>();
   private currentAlert: AlertConfig | null = null;
 
+  // Global speaking lock
+  private isSpeaking = false;
+
   // Session / startup state
   private sessionStartedAt: number | null = null;
   private hasPlayedWelcome = false;
@@ -54,7 +57,6 @@ export class AlertManager {
     if (this.hasPlayedWelcome) return;
 
     this.hasPlayedWelcome = true;
-
     speak('Driver monitoring active. Drive safely.');
   }
 
@@ -89,20 +91,26 @@ export class AlertManager {
 
   /**
    * Trigger an alert.
+   * Ensures only one alert speaks at a time.
    */
   private async triggerAlert(config: AlertConfig): Promise<void> {
     const state = this.getAlertState(config.id);
 
-    // Interrupt lower-priority alert if needed
-    if (this.currentAlert && config.priority > this.currentAlert.priority) {
-      await stopSpeaking();
-    }
-
     // Avoid re-speaking the same alert concurrently
     if (state.isSpeaking) return;
 
+    // If any alert is speaking, only interrupt if higher priority
+    if (this.isSpeaking && this.currentAlert) {
+      if (config.priority > this.currentAlert.priority) {
+        await stopSpeaking();
+      } else {
+        return;
+      }
+    }
+
     state.lastTriggeredAt = Date.now();
     state.isSpeaking = true;
+    this.isSpeaking = true;
     this.currentAlert = config;
 
     if (config.priority === AlertPriority.CRITICAL || config.priority === AlertPriority.HIGH) {
@@ -123,6 +131,7 @@ export class AlertManager {
    */
   private clearAlertState(config: AlertConfig, state: AlertState): void {
     state.isSpeaking = false;
+    this.isSpeaking = false;
 
     if (this.currentAlert?.id === config.id) {
       this.currentAlert = null;
@@ -162,5 +171,6 @@ export class AlertManager {
     this.alertStates.clear();
     this.sessionStartedAt = null;
     this.hasPlayedWelcome = false;
+    this.isSpeaking = false;
   }
 }
