@@ -8,8 +8,11 @@ from app.services.metrics.face_missing_state import FaceMissingState
 from app.services.metrics.frame_context import FrameContext
 from app.services.metrics.gaze import GazeMetric, GazeMetricOutput
 from app.services.metrics.head_pose import HeadPoseMetric, HeadPoseMetricOutput
+from app.services.metrics.phone_usage import (
+    PhoneUsageMetric,
+    PhoneUsageMetricOutput,
+)
 from app.services.metrics.yawn import YawnMetric, YawnMetricOutput
-from app.services.phone_usage import PhoneUsageMetric, PhoneUsageMetricOutput
 
 logger = logging.getLogger(__name__)
 
