@@ -47,7 +47,8 @@ const socialLinks = [
   { name: 'Twitter', href: '#', icon: Twitter },
   {
     name: 'GitHub',
-    href: 'https://github.com/silicondeck/shadcn-dashboard-landing-template',
+    href: 'https://github.com/popcorn-prophets/manobela',
+
     icon: Github,
   },
   { name: 'LinkedIn', href: '#', icon: Linkedin },
@@ -108,17 +109,13 @@ export function LandingFooter() {
           {/* Brand Column */}
           <div className="col-span-4 lg:col-span-2 max-w-2xl">
             <div className="flex items-center space-x-2 mb-4 max-lg:justify-center">
-              <a
-                href="https://shadcnstore.com"
-                target="_blank"
-                className="flex items-center space-x-2 cursor-pointer">
+              <a href="#" target="_blank" className="flex items-center space-x-2 cursor-pointer">
                 <Logo size={32} />
-                <span className="font-bold text-xl">ShadcnStore</span>
+                <span className="font-bold text-xl">Manobela</span>
               </a>
             </div>
             <p className="text-muted-foreground mb-6 max-lg:text-center max-lg:flex max-lg:justify-center">
-              Accelerating web development with curated blocks, templates, landing pages, and admin
-              dashboards designed for modern developers.
+              A driver monitoring system in your phone.
             </p>
             <div className="flex space-x-4 max-lg:justify-center">
               {socialLinks.map((social) => (
@@ -204,17 +201,17 @@ export function LandingFooter() {
           <div className="flex flex-col sm:flex-row items-center gap-2 text-muted-foreground text-sm">
             <div className="flex items-center gap-1">
               <span>Made with</span>
-              <Heart className="h-4 w-4 text-red-500 fill-current" />
+              <Heart className="h-4 w-4 text-red-400 fill-current" />
               <span>by</span>
               <a
-                href="https://shadcnstore.com"
+                href="https://github.com/popcorn-prophets"
                 target="_blank"
                 className="font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
-                ShadcnStore
+                Popcorn Prophets
               </a>
             </div>
             <span className="hidden sm:inline">•</span>
-            <span>© {new Date().getFullYear()} for the developer community</span>
+            <span>© {new Date().getFullYear()}</span>
           </div>
           <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-4 md:mt-0">
             <a href="#privacy" className="hover:text-foreground transition-colors">
@@ -222,9 +219,6 @@ export function LandingFooter() {
             </a>
             <a href="#terms" className="hover:text-foreground transition-colors">
               Terms of Service
-            </a>
-            <a href="#cookies" className="hover:text-foreground transition-colors">
-              Cookie Policy
             </a>
           </div>
         </div>
