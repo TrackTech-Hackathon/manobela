@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
-import { View, ScrollView } from 'react-native';
+import { Alert, View, ScrollView } from 'react-native';
 import { useKeepAwake } from 'expo-keep-awake';
+import { useLowBattery } from '@/hooks/useLowBattery';
 import { useCamera } from '@/hooks/useCamera';
 import { useMonitoringSession } from '@/hooks/useMonitoringSession';
 import { useAlerts } from '@/hooks/useAlerts';
@@ -31,6 +32,14 @@ export default function MonitorScreen() {
     metrics: inferenceData?.metrics ?? null,
     enabled: sessionState === 'active',
   });
+
+  const handleLowBattery = useCallback((level: number) => {
+    Alert.alert(
+      'Low Battery',
+      `Battery is at ${Math.round(level * 100)}%. Please consider charging your phone.`
+    );
+  }, []);
+  useLowBattery(0.25, handleLowBattery, sessionState === 'active');
 
   const handleToggle = useCallback(() => {
     if (sessionState === 'idle') {
