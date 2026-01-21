@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Play, Star } from 'lucide-react';
+import { ArrowRight, DownloadIcon, Play, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DotPattern } from '@/components/dot-pattern';
@@ -24,34 +24,33 @@ export function HeroSection() {
           <div className="mb-8 flex justify-center">
             <Badge variant="outline" className="px-4 py-2 border-foreground">
               <Star className="w-3 h-3 mr-2 fill-current" />
-              New: Premium Template Collection
+              v1.0.0 is live!
               <ArrowRight className="w-3 h-3 ml-2" />
             </Badge>
           </div>
 
           {/* Main Headline */}
           <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-            Build Better
+            Monitor Drivers.
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               {' '}
-              Web Applications{' '}
+              Prevent Accidents{' '}
             </span>
-            with Ready-Made Components
+            with Just a Mobile Phone
           </h1>
 
           {/* Subheading */}
           <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            Accelerate your development with our curated collection of blocks, templates, landing
-            pages, and admin dashboards. From free components to complete solutions, built with
-            shadcn/ui.
+            Manobela is a real-time driver monitoring system that uses computer vision to detect
+            unsafe behaviors using only a smartphone.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Button size="lg" className="text-base cursor-pointer" asChild>
-              <Link href="/auth/sign-up">
-                Get Started Free
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Link href="#">
+                Download Now
+                <DownloadIcon className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button variant="outline" size="lg" className="text-base cursor-pointer" asChild>
