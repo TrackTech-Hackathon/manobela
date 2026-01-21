@@ -1,33 +1,33 @@
 'use client';
 
-import { Package, Download, Users, Star } from 'lucide-react';
+import { Package, Download, Users, Star, Eye, Smartphone, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { DotPattern } from '@/components/dot-pattern';
 
 const stats = [
   {
-    icon: Package,
-    value: '500+',
-    label: 'Components',
-    description: 'Ready-to-use blocks',
-  },
-  {
-    icon: Download,
-    value: '25K+',
-    label: 'Downloads',
-    description: 'Trusted worldwide',
-  },
-  {
     icon: Users,
-    value: '10K+',
-    label: 'Developers',
-    description: 'Active community',
+    value: '94%',
+    label: 'Human Error',
+    description: 'Of crashes involve unsafe driver behavior',
   },
   {
-    icon: Star,
-    value: '4.9',
-    label: 'Rating',
-    description: 'User satisfaction',
+    icon: AlertTriangle,
+    value: '1.3M+',
+    label: 'Annual Deaths',
+    description: 'Global road traffic fatalities each year',
+  },
+  {
+    icon: Smartphone,
+    value: '1',
+    label: 'Device Needed',
+    description: 'Works with just a smartphone camera',
+  },
+  {
+    icon: Eye,
+    value: 'Real-Time',
+    label: 'Monitoring',
+    description: 'Detects distraction and drowsiness instantly',
   },
 ];
 

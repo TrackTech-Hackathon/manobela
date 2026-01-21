@@ -4,32 +4,32 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { CardDecorator } from '@/components/ui/card-decorator';
-import { Github, Code, Palette, Layout, Crown } from 'lucide-react';
+import { Eye, ShieldCheck, Smartphone, Globe } from 'lucide-react';
 
 const values = [
   {
-    icon: Code,
-    title: 'Developer First',
+    icon: Eye,
+    title: 'Real-Time Monitoring',
     description:
-      'Every component is built with the developer experience in mind, ensuring clean code and easy integration.',
+      'Manobela detects distraction and drowsiness live while you drive, using only a phone camera.',
   },
   {
-    icon: Palette,
-    title: 'Design Excellence',
+    icon: Smartphone,
+    title: 'Phone-Only by Design',
     description:
-      'We maintain the highest design standards, following shadcn/ui principles and modern UI patterns.',
+      'No extra hardware needed. The app works on any smartphone, regardless of device specs.',
   },
   {
-    icon: Layout,
-    title: 'Production Ready',
+    icon: ShieldCheck,
+    title: 'Server-Side Inference',
     description:
-      'Battle-tested components used in real applications with proven performance and reliability across different environments.',
+      'All processing happens on our servers, so the mobile device does not affect performance or accuracy.',
   },
   {
-    icon: Crown,
-    title: 'Premium Quality',
+    icon: Globe,
+    title: 'Built for Real Roads',
     description:
-      'Hand-crafted with attention to detail and performance optimization, ensuring exceptional user experience and accessibility.',
+      'Designed for everyday drivers in low- and middle-income regions where affordable safety solutions matter most.',
   },
 ];
 
@@ -40,19 +40,19 @@ export function AboutSection() {
         {/* Section Header */}
         <div className="mx-auto max-w-4xl text-center mb-16">
           <Badge variant="outline" className="mb-4">
-            About ShadcnStore
+            About Manobela
           </Badge>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
-            Built for developers, by developers
+            Eyes on the road. Safety beyond the dashboard.
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            We&apos;re passionate about creating the best marketplace for shadcn/ui components and
-            templates. Our mission is to accelerate development and help developers build beautiful
-            admin interfaces faster.
+            Manobela is a driver monitoring system that detects unsafe behaviors like distraction
+            and drowsiness using only a smartphone camera. Because inference runs on our servers, it
+            works on any phone and stays fast and accurate.
           </p>
         </div>
 
-        {/* Modern Values Grid with Enhanced Design */}
+        {/* Values Grid */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-4 mb-12">
           {values.map((value, index) => (
             <Card key={index} className="group shadow-xs py-2">
@@ -73,26 +73,12 @@ export function AboutSection() {
         <div className="mt-16 text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
             <span className="text-muted-foreground">
-              ❤️ Made with love for the developer community
+              Built to improve safety, not device requirements
             </span>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="cursor-pointer" asChild>
-              <a
-                href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
-                target="_blank"
-                rel="noopener noreferrer">
-                <Github className="mr-2 h-4 w-4" />
-                Star on GitHub
-              </a>
-            </Button>
             <Button size="lg" variant="outline" className="cursor-pointer" asChild>
-              <a
-                href="https://discord.com/invite/XEQhPc9a6p"
-                target="_blank"
-                rel="noopener noreferrer">
-                Join Discord Community
-              </a>
+              <a href="#faq">Learn How It Works</a>
             </Button>
           </div>
         </div>

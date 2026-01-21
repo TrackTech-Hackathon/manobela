@@ -66,8 +66,8 @@ export function ContactSection() {
             Need help or have questions?
           </h2>
           <p className="text-lg text-muted-foreground">
-            Our team is here to help you get the most out of ShadcnStore. Choose the best way to
-            reach out to us.
+            Our team is here to help you get the most out of Manobela. Choose the best way to reach
+            out to us.
           </p>
         </div>
 
@@ -83,13 +83,10 @@ export function ContactSection() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-3">
-                  Join our active community for quick help and discussions with other developers.
+                  Join our active community for quick help and discussions with other drivers.
                 </p>
                 <Button variant="outline" size="sm" className="cursor-pointer" asChild>
-                  <a
-                    href="https://discord.com/invite/XEQhPc9a6p"
-                    target="_blank"
-                    rel="noopener noreferrer">
+                  <a href="#" target="_blank" rel="noopener noreferrer">
                     Join Discord
                   </a>
                 </Button>
@@ -109,7 +106,7 @@ export function ContactSection() {
                 </p>
                 <Button variant="outline" size="sm" className="cursor-pointer" asChild>
                   <a
-                    href="https://github.com/silicondeck/shadcn-dashboard-landing-template/issues"
+                    href="https://github.com/popcorn-prophets/manobela/issues"
                     target="_blank"
                     rel="noopener noreferrer">
                     View on GitHub
@@ -127,10 +124,10 @@ export function ContactSection() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-3">
-                  Browse our comprehensive guides, tutorials, and component documentation.
+                  Browse our comprehensive guides, tutorials, and documentation.
                 </p>
                 <Button variant="outline" size="sm" className="cursor-pointer" asChild>
-                  <a href="#">View Docs</a>
+                  <a href="/docs">View Docs</a>
                 </Button>
               </CardContent>
             </Card>
@@ -197,7 +194,7 @@ export function ContactSection() {
                           <FormLabel>Subject</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Component request, bug report, general inquiry..."
+                              placeholder="Feature request, bug report, general inquiry..."
                               {...field}
                             />
                           </FormControl>
@@ -213,7 +210,7 @@ export function ContactSection() {
                           <FormLabel>Message</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="Tell us how we can help you with ShadcnStore components..."
+                              placeholder="Tell us how we can help you..."
                               rows={10}
                               className="min-h-50"
                               {...field}
