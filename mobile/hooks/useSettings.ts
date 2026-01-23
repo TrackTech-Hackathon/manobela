@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import {
+  createContext,
+  createElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   defaultSettings,
   loadSettings,
@@ -6,7 +15,16 @@ import {
   type Settings,
 } from '../lib/settings';
 
-export const useSettings = () => {
+type SettingsContextValue = {
+  settings: Settings;
+  isLoading: boolean;
+  refreshSettings: () => Promise<void>;
+  saveSettings: (nextSettings: Settings) => Promise<void>;
+};
+
+const SettingsContext = createContext<SettingsContextValue | null>(null);
+
+const useSettingsState = (): SettingsContextValue => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,4 +73,17 @@ export const useSettings = () => {
     refreshSettings,
     saveSettings,
   };
+};
+
+export const SettingsProvider = ({ children }: { children: ReactNode }) => {
+  const value = useSettingsState();
+  return createElement(SettingsContext.Provider, { value }, children);
+};
+
+export const useSettings = () => {
+  const context = useContext(SettingsContext);
+  if (!context) {
+    throw new Error('useSettings must be used within SettingsProvider');
+  }
+  return context;
 };
