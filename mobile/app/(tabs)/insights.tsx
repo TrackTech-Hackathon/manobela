@@ -106,7 +106,7 @@ export default function InsightsScreen() {
             <Text>
               End: {session.endedAt ? new Date(session.endedAt).toLocaleString() : 'Still running'}
             </Text>
-            <Text>Duration: {session.durationMs ?? '-'}</Text>
+            <Text>Duration: {session.durationMs ?? '-'} ms</Text>
 
             {/* Metrics */}
             <Text className="mt-3 font-semibold">Metrics</Text>
@@ -118,21 +118,38 @@ export default function InsightsScreen() {
             {sessionMetrics.map((m) => (
               <View key={m.id} className="mt-2 rounded border p-2">
                 <Text>Time: {new Date(m.timestamp).toLocaleTimeString()}</Text>
+
+                {/* Face */}
+                <Text>Face Missing: {m.faceMissing ? 'true' : 'false'}</Text>
+
+                {/* Eye */}
                 <Text>EAR: {m.ear}</Text>
+                <Text>Eye Closed: {m.eyeClosed ? 'true' : 'false'}</Text>
+                <Text>Eye Closed Sustained: {m.eyeClosedSustained}</Text>
                 <Text>Perclos: {m.perclos}</Text>
+                <Text>Perclos Alert: {m.perclosAlert ? 'true' : 'false'}</Text>
+
+                {/* Mouth */}
                 <Text>MAR: {m.mar}</Text>
+                <Text>Yawning: {m.yawning ? 'true' : 'false'}</Text>
+                <Text>Yawn Sustained: {m.yawnSustained}</Text>
+                <Text>Yawn Count: {m.yawnCount}</Text>
+
+                {/* Head pose */}
                 <Text>Yaw: {m.yaw}</Text>
                 <Text>Pitch: {m.pitch}</Text>
                 <Text>Roll: {m.roll}</Text>
-
-                <Text>Eye Closed: {m.eyeClosed ? 'true' : 'false'}</Text>
-                <Text>Yawning: {m.yawning ? 'true' : 'false'}</Text>
-                <Text>Phone Usage: {m.phoneUsage ? 'true' : 'false'}</Text>
-
-                <Text>Face Missing: {m.faceMissing ? 'true' : 'false'}</Text>
-                <Text>Yawn Count: {m.yawnCount}</Text>
+                <Text>Yaw Alert: {m.yawAlert ? 'true' : 'false'}</Text>
+                <Text>Pitch Alert: {m.pitchAlert ? 'true' : 'false'}</Text>
+                <Text>Roll Alert: {m.rollAlert ? 'true' : 'false'}</Text>
                 <Text>Head Pose Sustained: {m.headPoseSustained}</Text>
+
+                {/* Gaze */}
+                <Text>Gaze Alert: {m.gazeAlert ? 'true' : 'false'}</Text>
                 <Text>Gaze Sustained: {m.gazeSustained}</Text>
+
+                {/* Phone */}
+                <Text>Phone Usage: {m.phoneUsage ? 'true' : 'false'}</Text>
                 <Text>Phone Usage Sustained: {m.phoneUsageSustained}</Text>
               </View>
             ))}
