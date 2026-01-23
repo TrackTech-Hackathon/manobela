@@ -296,8 +296,9 @@ export default function UploadsScreen() {
     xhr.upload.onprogress = (event) => {
       if (!event.lengthComputable) return;
       const progress = Math.round((event.loaded / event.total) * 100);
-      setUploadProgress(progress);
-      if (progress >= 100) {
+      const clampedProgress = Math.min(100, Math.max(0, progress));
+      setUploadProgress(clampedProgress);
+      if (clampedProgress >= 100) {
         setIsProcessing(true);
       }
     };
