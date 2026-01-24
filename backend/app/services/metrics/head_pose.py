@@ -17,9 +17,12 @@ class HeadPoseMetricOutput(MetricOutputBase):
         yaw_alert: Whether the yaw angle deviates from the configured threshold.
         pitch_alert: Whether the pitch angle deviates from the configured threshold.
         roll_alert: Whether the roll angle deviates from the configured threshold.
-        yaw: Relative yaw angle (in degrees) for the current frame, if available.
-        pitch: Relative pitch angle (in degrees) for the current frame, if available.
-        roll: Relative roll angle (in degrees) for the current frame, if available.
+        yaw: Absolute yaw angle (in degrees) for the current frame, if available.
+        pitch: Absolute pitch angle (in degrees) for the current frame, if available.
+        roll: Absolute roll angle (in degrees) for the current frame, if available.
+        yaw_rel: Relative yaw angle (in degrees) for the current frame, if available.
+        pitch_rel: Relative pitch angle (in degrees) for the current frame, if available.
+        roll_rel: Relative roll angle (in degrees) for the current frame, if available.
         calibrating: Whether the baseline is being calibrated for this session.
         head_pose_sustained: Fraction of the minimum sustained duration that has elapsed for the most deviant axis.
     """
@@ -29,6 +32,9 @@ class HeadPoseMetricOutput(MetricOutputBase):
     yaw: Optional[float]
     pitch: Optional[float]
     roll: Optional[float]
+    yaw_rel: Optional[float]
+    pitch_rel: Optional[float]
+    roll_rel: Optional[float]
     calibrating: bool
     head_pose_sustained: float
 
@@ -121,6 +127,9 @@ class HeadPoseMetric(BaseMetric):
                 yaw=None,
                 pitch=None,
                 roll=None,
+                yaw_rel=None,
+                pitch_rel=None,
+                roll_rel=None,
                 calibrating=self._baseline_yaw is None,
             )
 
@@ -134,6 +143,9 @@ class HeadPoseMetric(BaseMetric):
                 yaw=None,
                 pitch=None,
                 roll=None,
+                yaw_rel=None,
+                pitch_rel=None,
+                roll_rel=None,
                 calibrating=self._baseline_yaw is None,
             )
 
@@ -146,9 +158,12 @@ class HeadPoseMetric(BaseMetric):
             if self._baseline_count < self.calibration_frames:
                 self._reset_alert_state()
                 return self._build_output(
-                    yaw=None,
-                    pitch=None,
-                    roll=None,
+                    yaw=yaw,
+                    pitch=pitch,
+                    roll=roll,
+                    yaw_rel=None,
+                    pitch_rel=None,
+                    roll_rel=None,
                     calibrating=True,
                 )
 
@@ -187,9 +202,12 @@ class HeadPoseMetric(BaseMetric):
             self.roll_state = False
 
         return self._build_output(
-            yaw=yaw_rel,
-            pitch=pitch_rel,
-            roll=roll_rel,
+            yaw=yaw,
+            pitch=pitch,
+            roll=roll,
+            yaw_rel=yaw_rel,
+            pitch_rel=pitch_rel,
+            roll_rel=roll_rel,
             calibrating=False,
         )
 
@@ -220,6 +238,9 @@ class HeadPoseMetric(BaseMetric):
         yaw: Optional[float],
         pitch: Optional[float],
         roll: Optional[float],
+        yaw_rel: Optional[float],
+        pitch_rel: Optional[float],
+        roll_rel: Optional[float],
         calibrating: bool,
     ) -> HeadPoseMetricOutput:
         return {
@@ -229,6 +250,9 @@ class HeadPoseMetric(BaseMetric):
             "yaw_alert": self.yaw_state,
             "pitch_alert": self.pitch_state,
             "roll_alert": self.roll_state,
+            "yaw_rel": yaw_rel,
+            "pitch_rel": pitch_rel,
+            "roll_rel": roll_rel,
             "calibrating": calibrating,
             "head_pose_sustained": self._calc_sustained(),
         }
