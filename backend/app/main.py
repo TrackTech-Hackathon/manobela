@@ -17,7 +17,12 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         title=settings.app_name,
+        description="API for the Manobela app",
         lifespan=lifespan,
+        license_info={
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+        },
     )
 
     app.add_middleware(
