@@ -12,6 +12,7 @@ import SessionTimeRange from '@/components/insights/session-time-range';
 import { EarTrendChart } from '@/components/charts/ear-trend';
 import { MarTrendChart } from '@/components/charts/mar-trend';
 import { KpiCard } from '@/components/insights/kpi-card';
+import { Badge } from '@/components/ui/badge';
 
 export default function SessionDetailsScreen() {
   const { db } = useDatabase();
@@ -22,6 +23,8 @@ export default function SessionDetailsScreen() {
     [sessionId]
   );
   const session = sessionList?.[0];
+
+  const isActive = !!session && !session.endedAt;
 
   const { data: sessionMetrics = [] } = useLiveQuery(
     db
@@ -103,7 +106,14 @@ export default function SessionDetailsScreen() {
 
         {session ? (
           <View className="mb-4">
-            <SessionTimeRange session={session} />
+            <View className="flex flex-row items-start justify-between">
+              <SessionTimeRange session={session} />
+              {isActive && (
+                <Badge variant="destructive">
+                  <Text>Active</Text>
+                </Badge>
+              )}
+            </View>
             <Text className="text-sm text-muted-foreground">Client ID: {session.clientId}</Text>
           </View>
         ) : (

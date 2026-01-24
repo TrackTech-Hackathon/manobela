@@ -3,6 +3,7 @@ import { useWebRTC } from './useWebRTC';
 import { MediaStream } from 'react-native-webrtc';
 import { sessionLogger } from '@/services/logging/session-logger';
 import { InferenceData } from '@/types/inference';
+import { useSessionStore } from '@/stores/sessionStore';
 
 export type SessionState = 'idle' | 'starting' | 'active' | 'stopping';
 
@@ -66,6 +67,7 @@ export const useMonitoringSession = ({
       (async () => {
         await sessionLogger.endSession();
         setSessionState('idle');
+        useSessionStore.getState().setActiveSessionId(null);
       })();
       return;
     }
@@ -76,6 +78,7 @@ export const useMonitoringSession = ({
       (async () => {
         await sessionLogger.startSession(clientId);
         setSessionState('active');
+        useSessionStore.getState().setActiveSessionId(sessionLogger.getCurrentSessionId());
       })();
     }
   }, [connectionStatus, sessionState, clientId]);
@@ -155,6 +158,8 @@ export const useMonitoringSession = ({
     cleanup();
 
     await sessionLogger.endSession();
+
+    useSessionStore.getState().setActiveSessionId(null);
 
     setSessionState('idle');
     setInferenceData(null);
