@@ -1,18 +1,18 @@
 import { FlatList, View } from 'react-native';
 import type { InferSelectModel } from 'drizzle-orm';
 import { sessions } from '@/db/schema';
-import SessionCard from './sessions-card';
+import { SessionCard } from './session-card';
 import { Text } from '@/components/ui/text';
 
 type Session = InferSelectModel<typeof sessions>;
 
-export default function SessionsList({
+export const SessionsList = ({
   sessions,
   onPressSession,
 }: {
   sessions: Session[];
   onPressSession: (id: string) => void;
-}) {
+}) => {
   return (
     <FlatList<Session>
       data={sessions}
@@ -34,4 +34,4 @@ export default function SessionsList({
       )}
     />
   );
-}
+};

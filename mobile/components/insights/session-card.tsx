@@ -4,17 +4,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { InferSelectModel } from 'drizzle-orm';
 import { sessions } from '@/db/schema';
-import SessionTimeRange from './session-time-range';
+import { SessionTimeRange } from './session-time-range';
 
 type Session = InferSelectModel<typeof sessions>;
 
-export default function SessionCard({
-  session,
-  onPress,
-}: {
-  session: Session;
-  onPress: () => void;
-}) {
+export const SessionCard = ({ session, onPress }: { session: Session; onPress: () => void }) => {
   const isActive = !session.endedAt;
 
   return (
@@ -34,4 +28,4 @@ export default function SessionCard({
       </Card>
     </TouchableOpacity>
   );
-}
+};

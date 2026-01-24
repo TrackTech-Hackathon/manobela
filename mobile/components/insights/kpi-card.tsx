@@ -2,6 +2,15 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
 
+interface KpiCardProps {
+  eyeClosedPercent: number;
+  totalYawnCount: number;
+  phoneUsagePercent: number;
+  gazeAlertPercent: number;
+  headPoseAlertPercent: number;
+  faceMissingPercent: number;
+}
+
 /**
  * Shows KPI (Key Performance Indicator) values for the current session.
  */
@@ -12,14 +21,7 @@ export const KpiCard = ({
   gazeAlertPercent,
   headPoseAlertPercent,
   faceMissingPercent,
-}: {
-  eyeClosedPercent: number;
-  totalYawnCount: number;
-  phoneUsagePercent: number;
-  gazeAlertPercent: number;
-  headPoseAlertPercent: number;
-  faceMissingPercent: number;
-}) => {
+}: KpiCardProps) => {
   return (
     <View className="mb-4 flex-row flex-wrap px-1">
       <View className="mb-2 w-1/3">

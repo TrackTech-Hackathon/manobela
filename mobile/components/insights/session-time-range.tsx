@@ -25,7 +25,7 @@ function formatDuration(durationMs: number) {
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-export default function SessionTimeRange({ session }: { session?: Session | null }) {
+export const SessionTimeRange = ({ session }: { session: Session }) => {
   if (!session) {
     return <Text className="text-sm font-semibold">-</Text>;
   }
@@ -51,4 +51,4 @@ export default function SessionTimeRange({ session }: { session?: Session | null
       </Text>
     </View>
   );
-}
+};

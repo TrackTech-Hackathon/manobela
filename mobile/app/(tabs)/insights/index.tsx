@@ -7,7 +7,7 @@ import { sessions, metrics } from '@/db/schema';
 import { desc } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 
-import SessionsList from '@/components/insights/sessions-list';
+import { SessionsList } from '@/components/insights/sessions-list';
 import { KpiRadar } from '@/components/charts/kpi-radar';
 import { KpiCard } from '@/components/insights/kpi-card';
 import { useSessionStore } from '@/stores/sessionStore';

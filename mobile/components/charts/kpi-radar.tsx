@@ -17,6 +17,9 @@ function clamp01(n: number) {
   return Math.min(1, Math.max(0, n));
 }
 
+/**
+ * Shows a radar chart of KPI values.
+ */
 export const KpiRadar = ({
   eyeClosedPercent,
   yawnAlertPercent,

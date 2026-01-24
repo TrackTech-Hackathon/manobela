@@ -8,7 +8,7 @@ import { useDatabase } from '@/components/database-provider';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { desc, eq } from 'drizzle-orm';
 
-import SessionTimeRange from '@/components/insights/session-time-range';
+import { SessionTimeRange } from '@/components/insights/session-time-range';
 import { EarTrendChart } from '@/components/charts/ear-trend';
 import { MarTrendChart } from '@/components/charts/mar-trend';
 import { KpiCard } from '@/components/insights/kpi-card';
