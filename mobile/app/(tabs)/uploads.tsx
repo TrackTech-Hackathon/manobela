@@ -161,8 +161,7 @@ export default function UploadsScreen() {
                           />
                         ) : null}
                         <Text className="font-mono text-xs text-muted-foreground">
-                          Metrics (full):{'
-'}
+                          Metrics (full):{'\n'}
                           {formatJsonFull(group.aggregate.metrics)}
                         </Text>
                       </View>

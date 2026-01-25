@@ -63,6 +63,10 @@ def encode_frame_thumbnail(frame) -> str | None:
         return None
     return base64.b64encode(buffer.tobytes()).decode("ascii")
 
+def _is_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
 def _is_numeric(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
@@ -108,6 +112,10 @@ def _aggregate_metrics_object(objects: list[dict[str, Any]]) -> dict[str, Any]:
         if key.endswith("_alert"):
             bools = [value for value in values if isinstance(value, bool)]
             result[key] = _aggregate_boolean(bools) if bools else values[-1]
+            continue
+
+        if all(_is_int(value) for value in values):
+            result[key] = max(values)
             continue
 
         if all(_is_numeric(value) for value in values):
