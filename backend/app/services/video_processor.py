@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 import cv2
+from aiortc.mediastreams import MediaStreamError
 
 from app.core.config import settings
 from app.models.inference import InferenceData, Resolution
@@ -28,6 +29,7 @@ TARGET_FPS = max(1, settings.target_fps)
 TARGET_INTERVAL_SEC = 1 / TARGET_FPS
 MAX_WIDTH = 480
 RENDER_LANDMARKS_FULL = False  # Option to render all landmarks or only essential ones
+MAX_DATA_CHANNEL_BUFFER = 1_000_000  # bytes
 
 # Dedicated thread pool for CPU-bound frame processing
 executor = ThreadPoolExecutor(max_workers=min(os.cpu_count() or 4, 4))
@@ -91,6 +93,7 @@ async def process_video_frames(
     """
     frame_count = 0
     processed_frames = 0
+    dropped_messages = 0
     start_time = time.perf_counter()
     last_process_time = time.perf_counter()
     metric_manager = MetricManager()
@@ -154,6 +157,18 @@ async def process_video_frames(
                 else:
                     data_channel_retries = 0
 
+                buffered_amount = getattr(channel, "bufferedAmount", 0)
+                if buffered_amount > MAX_DATA_CHANNEL_BUFFER:
+                    dropped_messages += 1
+                    if dropped_messages % 50 == 0:
+                        logger.warning(
+                            "Client %s: Data channel buffer high (%d bytes); dropped %d messages",
+                            client_id,
+                            buffered_amount,
+                            dropped_messages,
+                        )
+                    continue
+
                 # Convert frame to numpy array
                 img = frame.to_ndarray(format="bgr24")
                 h, w = img.shape[:2]
@@ -211,6 +226,10 @@ async def process_video_frames(
             except asyncio.CancelledError:
                 logger.info("Frame processing cancelled for %s", client_id)
                 raise  # MUST propagate cancellation
+
+            except MediaStreamError:
+                logger.info("Video track ended for %s", client_id)
+                break
 
             except Exception:
                 logger.exception("Non-fatal frame processing error for %s", client_id)
