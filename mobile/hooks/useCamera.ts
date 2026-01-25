@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { mediaDevices, MediaStream } from 'react-native-webrtc';
 import { Constraints } from 'react-native-webrtc/lib/typescript/getUserMedia';
 
@@ -11,6 +11,7 @@ interface UseCameraReturn {
  */
 export function useCamera(): UseCameraReturn {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -30,8 +31,13 @@ export function useCamera(): UseCameraReturn {
 
         const stream = await mediaDevices.getUserMedia(constraints);
 
-        // Set the local stream if still mounted
-        if (active) setLocalStream(stream);
+        if (!active) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+
+        streamRef.current = stream;
+        setLocalStream(stream);
       } catch (err) {
         console.error('Failed to get camera', err);
       }
@@ -42,7 +48,8 @@ export function useCamera(): UseCameraReturn {
     // Stop all tracks when the component unmounts
     return () => {
       active = false;
-      localStream?.getTracks().forEach((t) => t.stop());
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
     };
   }, []);
 
