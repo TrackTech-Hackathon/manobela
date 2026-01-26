@@ -29,6 +29,7 @@ export default function SessionDetailsScreen() {
   const session = sessionList?.[0];
 
   const isActive = !!session && !session.endedAt;
+  const isUpload = session?.sessionType === 'upload';
 
   const { data: sessionMetrics = [] } = useLiveQuery(
     db
@@ -126,11 +127,18 @@ export default function SessionDetailsScreen() {
           <View className="mb-4">
             <View className="flex flex-row items-start justify-between">
               <SessionTimeRange session={session} />
-              {isActive && (
-                <Badge variant="destructive">
-                  <Text>Active</Text>
-                </Badge>
-              )}
+              <View className="flex-row gap-2">
+                {isUpload && (
+                  <Badge variant="secondary">
+                    <Text>Upload</Text>
+                  </Badge>
+                )}
+                {isActive && (
+                  <Badge variant="destructive">
+                    <Text>Active</Text>
+                  </Badge>
+                )}
+              </View>
             </View>
             <Text className="text-sm text-muted-foreground">Client ID: {session.clientId}</Text>
           </View>
