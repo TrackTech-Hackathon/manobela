@@ -2,6 +2,7 @@ import { db } from '@/db/client';
 import { sessions, metrics } from '@/db/schema';
 import uuid from 'react-native-uuid';
 import { InferenceData } from '@/types/inference';
+import { VideoProcessingResponse } from '@/types/video';
 import { eq } from 'drizzle-orm';
 
 type NewMetric = typeof metrics.$inferInsert;
@@ -123,9 +124,92 @@ export const sessionLogger = {
   },
 
   /**
+   * Process and log an uploaded video as a session
+   */
+  logUploadedVideo: async (videoResult: VideoProcessingResponse, videoName: string) => {
+    if (readOnly) return null; // blocks writes
+
+    const sessionId = uuid.v4();
+    const startedAt = Date.now();
+    const durationMs = Math.round(videoResult.video_metadata.duration_sec * 1000);
+    const endedAt = startedAt + durationMs;
+
+    try {
+      await db.transaction(async (tx) => {
+        // Create the upload session
+        await tx.insert(sessions).values({
+          id: sessionId,
+          clientId: videoName,
+          startedAt,
+          endedAt,
+          durationMs,
+          sessionType: 'upload',
+        } as NewSession);
+
+        // Process groups and create metrics from aggregated data
+        const metricsToInsert: NewMetric[] = [];
+
+        for (const group of videoResult.groups) {
+          if (!group.aggregate.metrics) continue;
+
+          const m = group.aggregate.metrics as any;
+          // Use the middle timestamp of the group interval
+          const groupMidpointSec = (group.start_sec + group.end_sec) / 2;
+          const timestamp = startedAt + groupMidpointSec * 1000;
+
+          metricsToInsert.push({
+            id: uuid.v4(),
+            sessionId,
+            timestamp: Math.round(timestamp),
+
+            faceMissing: m.face_missing ?? false,
+
+            ear: m.eye_closure?.ear ?? null,
+            eyeClosed: m.eye_closure?.eye_closed ?? false,
+            eyeClosedSustained: m.eye_closure?.eye_closed_sustained ?? 0,
+            perclos: m.eye_closure?.perclos ?? null,
+            perclosAlert: m.eye_closure?.perclos_alert ?? false,
+
+            mar: m.yawn?.mar ?? null,
+            yawning: m.yawn?.yawning ?? false,
+            yawnSustained: m.yawn?.yawn_sustained ?? 0,
+            yawnCount: m.yawn?.yawn_count ?? 0,
+
+            yaw: m.head_pose?.yaw ?? null,
+            pitch: m.head_pose?.pitch ?? null,
+            roll: m.head_pose?.roll ?? null,
+            yawAlert: m.head_pose?.yaw_alert ?? false,
+            pitchAlert: m.head_pose?.pitch_alert ?? false,
+            rollAlert: m.head_pose?.roll_alert ?? false,
+            headPoseSustained: m.head_pose?.head_pose_sustained ?? 0,
+
+            gazeAlert: m.gaze?.gaze_alert ?? false,
+            gazeSustained: m.gaze?.gaze_sustained ?? 0,
+
+            phoneUsage: m.phone_usage?.phone_usage ?? false,
+            phoneUsageSustained: m.phone_usage?.phone_usage_sustained ?? 0,
+          } as NewMetric);
+        }
+
+        // Insert all metrics in batches
+        const BATCH_SIZE = 50;
+        for (let i = 0; i < metricsToInsert.length; i += BATCH_SIZE) {
+          const batch = metricsToInsert.slice(i, i + BATCH_SIZE);
+          await tx.insert(metrics).values(batch);
+        }
+      });
+
+      return sessionId;
+    } catch (error) {
+      console.error('Failed to log uploaded video session:', error);
+      throw error; // Re-throw to allow caller to handle
+    }
+  },
+
+  /**
    * Start a new session
    */
-  startSession: async (clientId: string | null) => {
+  startSession: async (clientId: string | null, sessionType: 'live' | 'upload' = 'live') => {
     if (readOnly) return null; // blocks writes
 
     const id = uuid.v4();
@@ -134,6 +218,7 @@ export const sessionLogger = {
       id,
       clientId: clientId ?? 'unknown',
       startedAt: Date.now(),
+      sessionType,
     } as NewSession);
 
     currentSessionId = id;

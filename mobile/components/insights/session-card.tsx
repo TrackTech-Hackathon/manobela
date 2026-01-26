@@ -10,6 +10,7 @@ type Session = InferSelectModel<typeof sessions>;
 
 export const SessionCard = ({ session, onPress }: { session: Session; onPress: () => void }) => {
   const isActive = !session.endedAt;
+  const isUpload = session.sessionType === 'upload';
 
   return (
     <TouchableOpacity onPress={onPress} className="mb-3">
@@ -18,11 +19,18 @@ export const SessionCard = ({ session, onPress }: { session: Session; onPress: (
           <View className="flex-row items-center justify-between">
             <SessionTimeRange session={session} />
 
-            {isActive && (
-              <Badge variant="destructive">
-                <Text className="text-xs font-semibold">Active</Text>
-              </Badge>
-            )}
+            <View className="flex-row gap-2">
+              {isUpload && (
+                <Badge variant="secondary">
+                  <Text className="text-xs font-semibold">Upload</Text>
+                </Badge>
+              )}
+              {isActive && (
+                <Badge variant="destructive">
+                  <Text className="text-xs font-semibold">Active</Text>
+                </Badge>
+              )}
+            </View>
           </View>
         </CardContent>
       </Card>
