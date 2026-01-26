@@ -144,14 +144,16 @@ export const sessionLogger = {
       sessionType: 'upload',
     } as NewSession);
 
-    // Process all frames and create metrics
+    // Process groups and create metrics from aggregated data
     const metricsToInsert: NewMetric[] = [];
 
-    for (const frame of videoResult.frames) {
-      if (!frame.metrics) continue;
+    for (const group of videoResult.groups) {
+      if (!group.aggregate.metrics) continue;
 
-      const m = frame.metrics as any;
-      const timestamp = startedAt + (frame.frame_number / videoResult.video_metadata.fps) * 1000;
+      const m = group.aggregate.metrics as any;
+      // Use the middle timestamp of the group interval
+      const groupMidpointSec = (group.start_sec + group.end_sec) / 2;
+      const timestamp = startedAt + groupMidpointSec * 1000;
 
       metricsToInsert.push({
         id: uuid.v4(),
