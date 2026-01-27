@@ -55,8 +55,8 @@ const defaultTheme: SearchBoxTheme = {
   containerClass: 'bg-background flex-row items-center rounded-full px-2 py-1',
   inputClass: 'flex-1 text-foreground placeholder:text-muted-foreground',
 
-  resultsClass: 'mt-2 rounded-md border max-h-72 overflow-hidden bg-popover',
-  resultClass: 'flex-row items-center border-b px-3 py-3 last:border-b-0',
+  resultsClass: 'mt-2 rounded-md',
+  resultClass: 'flex-row items-center px-3 py-3',
 
   resultTextClass: 'text-primary',
   resultTitleClass: 'text-primary font-medium',

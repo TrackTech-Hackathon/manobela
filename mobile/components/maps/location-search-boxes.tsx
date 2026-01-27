@@ -68,7 +68,7 @@ export function LocationSearchBoxes({
         </View>
 
         {/* Destination */}
-        <View className="flex-row items-center bg-background">
+        <View className="flex-row bg-background">
           <View className="py-3 pl-4">
             <MapPin size={16} color={colors.destructive} />
           </View>
