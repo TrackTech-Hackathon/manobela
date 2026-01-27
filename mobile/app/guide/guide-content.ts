@@ -26,7 +26,7 @@ export const GUIDE_SECTIONS = [
       ' Eyes: Tracks eye closure frequency and duration to detect fatigue (EAR, PERCLOS)',
       ' Yawn: Detects yawning as an indicator of drowsiness',
       ' Head: Monitors head orientation (yaw, pitch, roll) to detect looking away from the road',
-      ' Gaze: Tracks eye direction to detect when you\'re not looking forward',
+      " Gaze: Tracks eye direction to detect when you're not looking forward",
       ' Phone: Detects phone usage while driving',
     ],
   },
