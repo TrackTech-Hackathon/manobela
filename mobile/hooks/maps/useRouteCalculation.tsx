@@ -16,7 +16,11 @@ interface UseRouteCalculationReturn {
   formatDuration: (route: Route) => string;
 }
 
-export function useRouteCalculation(): UseRouteCalculationReturn {
+export function useRouteCalculation({
+  mapRef,
+}: {
+  mapRef: React.RefObject<OSMViewRef | null>;
+}): UseRouteCalculationReturn {
   const routing = useOSRMRouting();
   const [route, setRoute] = useState<Route | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -76,9 +80,11 @@ export function useRouteCalculation(): UseRouteCalculationReturn {
   const clearRoute = useCallback(() => {
     setRoute(null);
     setError(null);
-    // Note: The SDK should handle clearing the route from the map
-    // when route is set to null or when calculateAndDisplayRoute is called again
-  }, []);
+
+    if (mapRef.current) {
+      routing.clearRoute(mapRef as React.RefObject<OSMViewRef>);
+    }
+  }, [mapRef, routing]);
 
   const formatDistance = useCallback(
     (route: Route) => {

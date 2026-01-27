@@ -49,7 +49,7 @@ export default function MapsScreen() {
     clearRoute,
     formatDistance,
     formatDuration,
-  } = useRouteCalculation();
+  } = useRouteCalculation({ mapRef });
 
   // Location handlers
   const {
@@ -71,7 +71,14 @@ export default function MapsScreen() {
   // Map markers
   const markers = useMapMarkers(startLocation, destinationLocation);
 
-  // Handle clear route
+  // Handle calculate route (start)
+  const handleCalculateRoute = useCallback(() => {
+    if (startLocation && destinationLocation) {
+      calculateRoute(startLocation.coordinate, destinationLocation.coordinate, mapRef);
+    }
+  }, [calculateRoute, startLocation, destinationLocation]);
+
+  // Handle clear route (stop)
   const handleClearRoute = useCallback(() => {
     clearRoute();
     setStartLocation(null);
@@ -136,6 +143,7 @@ export default function MapsScreen() {
 
       <RouteControls
         onUseCurrentLocation={handleUseCurrentLocation}
+        onCalculateRoute={handleCalculateRoute}
         onClearRoute={handleClearRoute}
         onZoomIn={mapRef.current?.zoomIn || (() => {})}
         onZoomOut={mapRef.current?.zoomOut || (() => {})}
