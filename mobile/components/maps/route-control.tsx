@@ -1,5 +1,6 @@
-import { View, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
-import { MapPin, Navigation, X } from 'lucide-react-native';
+import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Navigation, X } from 'lucide-react-native';
+import { useTheme } from '@react-navigation/native';
 
 interface RouteControlsProps {
   onUseCurrentLocation: () => void;
@@ -18,6 +19,7 @@ export function RouteControls({
   hasCurrentLocation,
   isGettingUserLocation,
 }: RouteControlsProps) {
+  const { colors } = useTheme();
   return (
     <View className="absolute bottom-24 right-4 flex-col gap-3">
       {/* Use Current Location Button */}
@@ -25,18 +27,11 @@ export function RouteControls({
         <TouchableOpacity
           onPress={onUseCurrentLocation}
           disabled={isCalculating || isGettingUserLocation}
-          className="rounded-full bg-blue-500 p-4 shadow-lg active:bg-blue-600"
-          style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-          }}>
+          className="rounded-full bg-background/80 p-3 shadow-lg active:bg-background">
           {isCalculating || isGettingUserLocation ? (
-            <ActivityIndicator color="white" size="small" />
+            <ActivityIndicator color={colors.text} size="small" />
           ) : (
-            <Navigation color="white" size={24} />
+            <Navigation color={colors.text} size={20} />
           )}
         </TouchableOpacity>
       )}
@@ -45,15 +40,8 @@ export function RouteControls({
       {hasRoute && (
         <TouchableOpacity
           onPress={onClearRoute}
-          className="rounded-full bg-red-500 p-4 shadow-lg active:bg-red-600"
-          style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-          }}>
-          <X color="white" size={24} />
+          className="rounded-full bg-destructive/80 p-3 shadow-lg active:bg-destructive">
+          <X color="white" size={20} />
         </TouchableOpacity>
       )}
     </View>
