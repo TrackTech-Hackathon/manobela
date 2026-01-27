@@ -1,17 +1,22 @@
-import { View, ActivityIndicator, ScrollView, Pressable, Image } from 'react-native';
+import { View, ActivityIndicator, ScrollView, Pressable, Image, StyleSheet } from 'react-native';
 
 import { useMemo, useState } from 'react';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { FacialLandmarkOverlay } from '@/components/facial-landmark-overlay';
+import { ObjectDetectionOverlay } from '@/components/object-detection-overlay';
 
 import { useSettings } from '@/hooks/useSettings';
 import { useVideoUpload } from '@/hooks/useVideoUpload';
+import { useUploadPlayback } from '@/hooks/useUploadPlayback';
 import {
   formatBytes,
   formatDuration,
   formatJsonFull,
   formatJsonPreview,
 } from '@/utils/videoFormatter';
+import { formatPlaybackTime } from '@/utils/uploadPlayback';
 
 export default function UploadsScreen() {
   const { settings } = useSettings();
@@ -32,8 +37,31 @@ export default function UploadsScreen() {
   } = useVideoUpload(apiBaseUrl);
 
   const [expandedGroups, setExpandedGroups] = useState<Record<number, boolean>>({});
-
-  const groups = useMemo(() => result?.groups ?? [], [result]);
+  const [showOverlays, setShowOverlays] = useState(true);
+  const player = useVideoPlayer(selectedVideo?.uri ?? null, (player) => {
+    player.timeUpdateEventInterval = 0.05;
+  });
+  const {
+    groups,
+    activeGroup,
+    playbackAspectRatio,
+    playbackPositionMs,
+    totalDurationMs,
+    playbackView,
+    handlePlaybackLayout,
+    overlayLandmarks,
+    overlayDetections,
+    overlayResolution,
+    canRenderOverlay,
+    hasOverlayData,
+    groupIntervalSec,
+  } = useUploadPlayback({
+    result,
+    selectedVideoUri: selectedVideo?.uri,
+    showOverlays,
+    player,
+    holdMs: 200,
+  });
 
   return (
     <ScrollView className="flex-1 px-4 py-6">
@@ -75,9 +103,7 @@ export default function UploadsScreen() {
         </Button>
 
         {isUploading ? (
-          <Text className="text-sm text-muted-foreground">
-            Upload progress: {uploadProgress}%
-          </Text>
+          <Text className="text-sm text-muted-foreground">Upload progress: {uploadProgress}%</Text>
         ) : null}
 
         {isProcessing ? (
@@ -105,9 +131,79 @@ export default function UploadsScreen() {
               Resolution: {result.video_metadata.resolution.width} x{' '}
               {result.video_metadata.resolution.height}
             </Text>
+            <View className="mt-4 gap-2">
+              <View className="flex-row items-center justify-between">
+                <Text className="font-semibold">Playback</Text>
+                <Button variant="ghost" size="sm" onPress={() => setShowOverlays((prev) => !prev)}>
+                  <Text>{showOverlays ? 'Hide overlays' : 'Show overlays'}</Text>
+                </Button>
+              </View>
+              <Text className="text-xs text-muted-foreground">
+                {result.video_metadata.fps
+                  ? `Overlays sampled at ${result.video_metadata.fps} fps.`
+                  : 'Overlays sampled per frame.'}
+              </Text>
+              <View
+                className="relative overflow-hidden rounded-md border border-border bg-black"
+                style={{ width: '100%', aspectRatio: playbackAspectRatio }}
+                onLayout={handlePlaybackLayout}>
+                {selectedVideo ? (
+                  <VideoView
+                    player={player}
+                    style={StyleSheet.absoluteFill}
+                    contentFit="contain"
+                    nativeControls
+                  />
+                ) : null}
+                {canRenderOverlay ? (
+                  <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+                    {overlayLandmarks ? (
+                      <FacialLandmarkOverlay
+                        landmarks={overlayLandmarks}
+                        videoWidth={overlayResolution?.width ?? 0}
+                        videoHeight={overlayResolution?.height ?? 0}
+                        viewWidth={playbackView.width}
+                        viewHeight={playbackView.height}
+                        mirror={false}
+                      />
+                    ) : null}
+                    {overlayDetections ? (
+                      <ObjectDetectionOverlay
+                        detections={overlayDetections}
+                        videoWidth={overlayResolution?.width ?? 0}
+                        videoHeight={overlayResolution?.height ?? 0}
+                        viewWidth={playbackView.width}
+                        viewHeight={playbackView.height}
+                        mirror={false}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+              </View>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-xs text-muted-foreground">
+                  {formatPlaybackTime(playbackPositionMs)}
+                  {totalDurationMs != null ? ` / ${formatPlaybackTime(totalDurationMs)}` : ''}
+                </Text>
+                {activeGroup ? (
+                  <Text className="text-xs text-muted-foreground">
+                    Window {formatPlaybackTime(activeGroup.start_sec * 1000)} -{' '}
+                    {formatPlaybackTime(activeGroup.end_sec * 1000)}
+                  </Text>
+                ) : null}
+              </View>
+              {!hasOverlayData ? (
+                <Text className="text-xs text-muted-foreground">
+                  No overlay data available for this frame.
+                </Text>
+              ) : null}
+            </View>
             <Text className="mt-3 font-semibold">Frame Results</Text>
             <Text className="text-xs text-muted-foreground">
-              Grouped by 5-second windows. Each box shows the aggregate result for the interval.
+              {groupIntervalSec > 0
+                ? `Grouped by ${groupIntervalSec}-second windows.`
+                : 'Grouped by time windows.'}{' '}
+              Each box shows the aggregate result for the interval.
             </Text>
             <View className="mt-2 gap-3">
               {groups.map((group) => (

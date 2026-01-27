@@ -27,6 +27,25 @@ export const useVideoUpload = (apiBaseUrl: string): UseVideoUploadResult => {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<VideoProcessingResponse | null>(null);
 
+  const normalizeVideoName = (name: string, mimeType?: string | null) => {
+    const safeName = name.trim() || 'upload';
+    const lower = safeName.toLowerCase();
+    if (lower.endsWith('.mp4') || lower.endsWith('.mov')) {
+      return safeName;
+    }
+    const base = safeName.replace(/\.[^/.]+$/, '');
+    const extension = mimeType === 'video/quicktime' ? '.mov' : '.mp4';
+    return `${base}${extension}`;
+  };
+
+  const normalizeVideoMimeType = (name: string, mimeType?: string | null) => {
+    const lower = name.toLowerCase();
+    if (lower.endsWith('.mov')) return 'video/quicktime';
+    if (lower.endsWith('.mp4')) return 'video/mp4';
+    if (mimeType && mimeType.startsWith('video/')) return mimeType;
+    return 'video/mp4';
+  };
+
   const handleSelectVideo = async () => {
     setError(null);
     setResult(null);
@@ -40,6 +59,7 @@ export const useVideoUpload = (apiBaseUrl: string): UseVideoUploadResult => {
       mediaTypes: ['videos'],
       allowsEditing: false,
       quality: 1,
+      videoExportPreset: ImagePicker.VideoExportPreset.H264_1280x720,
     });
 
     if (selection.canceled || !selection.assets?.length) {
@@ -47,11 +67,12 @@ export const useVideoUpload = (apiBaseUrl: string): UseVideoUploadResult => {
     }
 
     const asset = selection.assets[0];
-    const name = asset.fileName ?? asset.uri.split('/').pop() ?? 'upload.mp4';
+    const fallbackName = asset.fileName ?? asset.uri.split('/').pop() ?? 'upload';
+    const name = normalizeVideoName(fallbackName, asset.mimeType);
     const info = await FileSystem.getInfoAsync(asset.uri);
     const sizeBytes = asset.fileSize ?? (info.exists ? (info.size ?? 0) : 0);
     const durationMs = asset.duration ?? undefined;
-    const mimeType = asset.mimeType ?? 'video/mp4';
+    const mimeType = normalizeVideoMimeType(name, asset.mimeType);
 
     setSelectedVideo({
       uri: asset.uri,
@@ -85,7 +106,7 @@ export const useVideoUpload = (apiBaseUrl: string): UseVideoUploadResult => {
     const xhr = new XMLHttpRequest();
     const uploadUrl =
       `${apiBaseUrl}/driver-monitoring/process-video` +
-      `?group_interval_sec=5&include_frames=false`;
+      `?group_interval_sec=5&include_frames=true&target_fps=10`;
     xhr.open('POST', uploadUrl);
     xhr.responseType = 'json';
     xhr.setRequestHeader('Accept', 'application/json');
@@ -116,8 +137,16 @@ export const useVideoUpload = (apiBaseUrl: string): UseVideoUploadResult => {
             typeof responseBody === 'string'
               ? (JSON.parse(responseBody) as VideoProcessingResponse)
               : (responseBody as VideoProcessingResponse);
-          const sanitized = { ...parsed, frames: undefined };
-          setResult(sanitized);
+          const trimmedFrames = parsed.frames?.map((frame) => ({
+            timestamp: frame.timestamp,
+            frame_number: frame.frame_number,
+            resolution: frame.resolution,
+            face_landmarks: frame.face_landmarks,
+            object_detections: frame.object_detections,
+            metrics: null,
+            thumbnail_base64: null,
+          }));
+          setResult({ ...parsed, frames: trimmedFrames });
 
           // Log the uploaded video to the database for insights
           if (selectedVideo) {
