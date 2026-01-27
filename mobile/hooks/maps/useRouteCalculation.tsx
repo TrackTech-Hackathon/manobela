@@ -1,10 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useOSRMRouting, type OSMViewRef, type Route } from 'expo-osm-sdk';
-
-interface Coordinate {
-  latitude: number;
-  longitude: number;
-}
+import { Coordinate } from '@/types/maps';
 
 interface UseRouteCalculationReturn {
   route: Route | null;

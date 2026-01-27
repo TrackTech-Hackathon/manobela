@@ -3,16 +3,12 @@ import { View, Alert } from 'react-native';
 import { Stack } from 'expo-router';
 import { OSMView, type OSMViewRef } from 'expo-osm-sdk';
 import * as Location from 'expo-location';
+import { MapLocation } from '@/types/maps';
 import { useRouteCalculation } from '../../../hooks/maps/useRouteCalculation';
 import { useLocationPermission } from '../../../hooks/maps/useLocationPermission';
 import { RouteControls } from '../../../components/maps/route-control';
 import { RouteInfo } from '../../../components/maps/route-info';
 import { LocationSearchBoxes } from '../../../components/maps/location-search-boxes';
-
-interface MapLocation {
-  coordinate: { latitude: number; longitude: number };
-  displayName?: string;
-}
 
 export default function MapsScreen() {
   const mapRef = useRef<OSMViewRef>(null);
