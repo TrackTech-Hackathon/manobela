@@ -21,6 +21,7 @@ export default function MapsScreen() {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   const {
     route,
@@ -77,20 +78,23 @@ export default function MapsScreen() {
       const userLocation = await getUserLocation();
       if (userLocation) {
         setInitialCenter(userLocation.coordinate);
-
-        // center map after ref is ready
-        mapRef.current?.animateToLocation(
-          userLocation.coordinate.latitude,
-          userLocation.coordinate.longitude,
-          INITIAL_ZOOM
-        );
-
-        setStartLocation(userLocation); // optional, if you want start to be current location
+        setStartLocation(userLocation);
       }
     };
 
     init();
   }, [getUserLocation]);
+
+  // Animate to user location once map is ready
+  useEffect(() => {
+    if (isMapReady && initialCenter && mapRef.current) {
+      mapRef.current.animateToLocation(
+        initialCenter.latitude,
+        initialCenter.longitude,
+        INITIAL_ZOOM
+      );
+    }
+  }, [isMapReady, initialCenter]);
 
   // Convert locations to markers array
   const markers = useMemo(() => {
@@ -264,6 +268,7 @@ export default function MapsScreen() {
         initialZoom={INITIAL_ZOOM}
         followUserLocation={true}
         markers={markers}
+        onMapReady={() => setIsMapReady(true)}
         onMarkerPress={(id) => {
           console.log('Marker pressed:', id);
         }}
