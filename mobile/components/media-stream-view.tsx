@@ -9,6 +9,7 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { Eye, EyeOff, Frown, Meh, ScanFace } from 'lucide-react-native';
 import { useTheme } from '@react-navigation/native';
+import { SpinningLogo } from './spinning-logo';
 
 type MediaStreamViewProps = {
   stream: MediaStream | null;
@@ -42,9 +43,7 @@ export const MediaStreamView = ({
 
   const [viewDimensions, setViewDimensions] = useState({ width: 0, height: 0 });
   const [showOverlay, setShowOverlay] = useState(true);
-  const [smoothedDetections, setSmoothedDetections] = useState<
-    ObjectDetection[] | null
-  >(null);
+  const [smoothedDetections, setSmoothedDetections] = useState<ObjectDetection[] | null>(null);
   const lastDetectionsRef = useRef<ObjectDetection[] | null>(null);
   const lastDetectionAtRef = useRef<number | null>(null);
 
@@ -140,6 +139,13 @@ export const MediaStreamView = ({
           viewHeight={viewDimensions.height}
           mirror={mirror}
         />
+      )}
+
+      {/* Loading spinner overlay */}
+      {(sessionState === 'starting' || sessionState === 'stopping') && (
+        <View className="absolute inset-0 items-center justify-center bg-black/40">
+          <SpinningLogo width={40} height={40} color="white" />
+        </View>
       )}
 
       {/* Overlay record button */}
