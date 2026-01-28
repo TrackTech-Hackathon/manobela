@@ -22,7 +22,7 @@ export const defaultSettings: Settings = {
   enableSpeechAlerts: true,
   enableHapticAlerts: true,
   enableSessionLogging: true,
-  enableAutoCoordination: true,
+  enableAutoCoordination: false,
 };
 
 const mergeSettings = (stored?: Partial<Settings>): Settings => {
