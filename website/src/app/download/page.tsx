@@ -41,14 +41,14 @@ export default function DownloadPage() {
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                Version: <span className="font-bold">{appVersion}</span>
+              </p>
               <Button asChild className="w-full max-w-xs">
                 <a href={apkUrl} download>
                   Download APK
                 </a>
               </Button>
-              <p className="text-sm text-muted-foreground">
-                Version: <span className="font-bold">{appVersion}</span>
-              </p>
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <a
                   href={googlePlayUrl}
@@ -56,7 +56,7 @@ export default function DownloadPage() {
                   rel="noopener noreferrer"
                   className="inline-block"
                   aria-label="Get it on Google Play">
-                  <div className="h-14 w-44 overflow-hidden rounded-md ">
+                  <div className="h-14 w-42 overflow-hidden rounded-md ">
                     <img
                       src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
                       alt="Get it on Google Play"
@@ -70,7 +70,7 @@ export default function DownloadPage() {
                   rel="noopener noreferrer"
                   className="inline-block"
                   aria-label="Download on the App Store">
-                  <div className="h-12 w-44 overflow-hidden rounded-md border-2 border-white">
+                  <div className="h-12 w-38overflow-hidden rounded-md border border-white">
                     <img
                       src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1276560000"
                       alt="Download on the App Store"
