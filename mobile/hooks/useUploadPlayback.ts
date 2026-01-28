@@ -51,12 +51,6 @@ export const useUploadPlayback = ({
   const [playbackDurationMs, setPlaybackDurationMs] = useState<number | null>(null);
   const [playbackView, setPlaybackView] = useState({ width: 0, height: 0 });
   const [overlaySnapshot, setOverlaySnapshot] = useState<OverlaySnapshot | null>(null);
-  const playerRef = useRef<VideoPlayer | null | undefined>(player);
-
-  // Keep ref in sync with player prop
-  useEffect(() => {
-    playerRef.current = player;
-  }, [player]);
 
   const groups = useMemo(() => result?.groups ?? [], [result]);
   const sortedGroups = useMemo(
