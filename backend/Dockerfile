@@ -18,12 +18,18 @@ ENV UV_NO_DEV=1
 # Install dependencies into the project .venv via uv
 RUN uv sync --frozen --no-cache
 
+# Ensure venv executables (e.g., uvicorn) are on PATH at runtime.
+ENV PATH="/app/.venv/bin:${PATH}"
+
 # Copy the rest of the application source
 COPY . /app
 
 # Expose the port
-EXPOSE ${PORT:-8000}
+EXPOSE 8000
 
 # Run the app
-CMD sh -c "uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+# Prefer Azure's WEBSITES_PORT when present; fall back to PORT, then 8000.
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${WEBSITES_PORT:-${PORT:-8000}}"]
+
+
 

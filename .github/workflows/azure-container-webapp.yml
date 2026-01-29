@@ -1,0 +1,34 @@
+name: Build and push backend image to ACR
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  BACKEND_DIR: backend
+  IMAGE_NAME: manobela-backend
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+      - name: Build and push (sha + latest)
+        run: |
+          SHA_IMAGE="${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          LATEST_IMAGE="${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest"
+
+          docker build -f "${{ env.BACKEND_DIR }}/Dockerfile" -t "$SHA_IMAGE" "${{ env.BACKEND_DIR }}"
+          docker push "$SHA_IMAGE"
+
+          docker tag "$SHA_IMAGE" "$LATEST_IMAGE"
+          docker push "$LATEST_IMAGE"
