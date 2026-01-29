@@ -1,8 +1,10 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { Navigation } from 'lucide-react-native';
 import { useTheme } from '@react-navigation/native';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Text } from '@/components/ui/text';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 interface NavigationPanelProps {
   isNavigating: boolean;
@@ -10,6 +12,7 @@ interface NavigationPanelProps {
   timeRemaining: number;
   nextTurnInstruction: string;
   progress: number;
+  turnInstructions: string[];
   onStopNavigation: () => void;
   formatDistanceMeters: (meters: number) => string;
   formatTimeSeconds: (seconds: number) => string;
@@ -21,6 +24,7 @@ export const NavigationPanel = ({
   timeRemaining,
   nextTurnInstruction,
   progress,
+  turnInstructions,
   onStopNavigation,
   formatDistanceMeters,
   formatTimeSeconds,
@@ -67,9 +71,33 @@ export const NavigationPanel = ({
       </View>
 
       {/* Stop Navigation Button */}
-      <Button onPress={onStopNavigation} variant="destructive">
+      <Button onPress={onStopNavigation} variant="destructive" className="mb-4">
         <Text>Stop Navigation</Text>
       </Button>
+
+      {/* Turn-by-turn list */}
+      <View className="mb-4">
+        <Text className="mb-2 text-sm font-semibold">Steps</Text>
+        <BottomSheetFlatList
+          data={turnInstructions}
+          keyExtractor={(item: string) => item}
+          className="max-h-40"
+          contentContainerClassName="gap-2"
+          renderItem={({ item, index }: { item: string; index: number }) => (
+            <View className="flex-row items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2">
+              <Text className="text-xs font-semibold text-muted-foreground">{index + 1}</Text>
+              <Text className="flex-1 text-sm text-foreground">{item}</Text>
+            </View>
+          )}
+          ListEmptyComponent={
+            <View className="rounded-lg border border-dashed border-border bg-muted/20 px-3 py-2">
+              <Text className="text-sm text-muted-foreground">
+                No turn-by-turn steps available yet.
+              </Text>
+            </View>
+          }
+        />
+      </View>
     </View>
   );
 };

@@ -97,6 +97,7 @@ export default function MapsScreen() {
     handleLocationUpdate,
     formatDistanceMeters,
     formatTimeSeconds,
+    turnInstructions,
   } = useNavigationManagement({
     mapRef,
     route,
@@ -308,6 +309,7 @@ export default function MapsScreen() {
               timeRemaining={navigationState.timeRemaining}
               nextTurnInstruction={navigationState.nextTurnInstruction}
               progress={navigationState.progress}
+              turnInstructions={turnInstructions}
               onStopNavigation={handleStopNavigation}
               formatDistanceMeters={formatDistanceMeters}
               formatTimeSeconds={formatTimeSeconds}

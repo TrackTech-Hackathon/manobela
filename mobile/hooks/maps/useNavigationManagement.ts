@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import type { OSMViewRef } from 'expo-osm-sdk';
 import type { Coordinate } from '@/types/maps';
 
@@ -186,6 +186,38 @@ export const useNavigationManagement = ({
     [route]
   );
 
+  const turnInstructions = useMemo(() => {
+    if (!route) return [];
+
+    const routeWithSteps = route as Route & {
+      steps?: { instruction?: string; name?: string }[];
+      instructions?: string[];
+    };
+
+    if (Array.isArray(routeWithSteps.steps) && routeWithSteps.steps.length > 0) {
+      return routeWithSteps.steps.map(
+        (step, index) => step.instruction || step.name || `Step ${index + 1}`
+      );
+    }
+
+    if (Array.isArray(routeWithSteps.instructions) && routeWithSteps.instructions.length > 0) {
+      return routeWithSteps.instructions;
+    }
+
+    const totalCoordinates = route.coordinates.length;
+    if (totalCoordinates < 2) return ['Continue to destination'];
+
+    const targetSteps = Math.min(12, Math.max(4, Math.floor(totalCoordinates / 10)));
+    const stepSize = Math.max(1, Math.floor(totalCoordinates / targetSteps));
+    const instructions: string[] = [];
+
+    for (let i = 0; i < totalCoordinates - 1; i += stepSize) {
+      instructions.push(getNextTurnInstruction(i));
+    }
+
+    return instructions.length > 0 ? instructions : ['Continue to destination'];
+  }, [route, getNextTurnInstruction]);
+
   // Handle location update during navigation
   const handleLocationUpdate = useCallback(
     (location: Coordinate) => {
@@ -363,6 +395,7 @@ export const useNavigationManagement = ({
     stopNavigation,
     handleLocationUpdate,
     getNavigationArrowMarker,
+    turnInstructions,
     formatDistanceMeters,
     formatTimeSeconds,
   };
