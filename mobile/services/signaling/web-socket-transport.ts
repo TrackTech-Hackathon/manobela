@@ -1,4 +1,6 @@
+import { mapNetworkErrorMessage} from '../network-error'
 import { SignalingMessage, SignalingTransport, TransportStatus } from '@/types/webrtc';
+import { getErrorText } from '../getError';
 
 /**
  * WebSocket-based implementation of the signaling transport.
@@ -48,14 +50,33 @@ export class WebSocketTransport implements SignalingTransport {
 
       // Connection-level error (usually fatal)
       ws.onerror = (e: any) => {
-        const message = e?.message || 'Unknown WebSocket error';
-        console.error('WebSocket error:', message);
+        // Make sure we always map a non-empty, informative string
+        const raw = `Websocket error to ${this.url} - ${getErrorText(e) || getErrorText(e?.error)}`;
+        const friendly = mapNetworkErrorMessage(raw);
+        const error = new Error(friendly);
+        (error as { cause?: unknown}).cause = raw;
+
+        console.error('Websocket error', e);
         this.status = 'closed';
-        reject(new Error(`WebSocket error: ${message}`));
+        reject(error);
       };
 
       // Remote or local close
-      ws.onclose = () => {
+      ws.onclose = (event: any) => {
+        // `context + url + code + reason`
+        const raw = `WebSocket closed to ${this.url} — code=${event?.code} reason=${event?.reason ?? ''}`;
+
+        if (this.status == 'connecting'){
+          const friendly = mapNetworkErrorMessage(raw);
+          const error = new Error(friendly);
+          (error as {cause?: unknown }).cause = raw;
+
+          this.status = 'closed';
+          this.ws = null;
+          reject(error);
+          return;
+        }
+
         this.status = 'closed';
         this.ws = null;
       };

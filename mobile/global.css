@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@plugin "@tailwindcss/typography";
+@config "./tailwind.config.js";
 
 @layer base {
   :root {
@@ -54,5 +56,68 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+}
+
+@layer components {
+  .prose {
+    --tw-prose-body: hsl(var(--foreground));
+    --tw-prose-headings: hsl(var(--foreground));
+    --tw-prose-lead: hsl(var(--muted-foreground));
+    --tw-prose-links: hsl(var(--primary));
+    --tw-prose-bold: hsl(var(--foreground));
+    --tw-prose-counters: hsl(var(--muted-foreground));
+    --tw-prose-bullets: hsl(var(--muted-foreground));
+    --tw-prose-hr: hsl(var(--border));
+    --tw-prose-quotes: hsl(var(--foreground));
+    --tw-prose-quote-borders: hsl(var(--border));
+    --tw-prose-captions: hsl(var(--muted-foreground));
+    --tw-prose-code: hsl(var(--foreground));
+    --tw-prose-pre-code: hsl(var(--foreground));
+    --tw-prose-pre-bg: hsl(var(--card));
+    --tw-prose-th-borders: hsl(var(--border));
+    --tw-prose-td-borders: hsl(var(--border));
+
+    font-size: 1rem;
+    line-height: 2;
+    max-width: 70ch;
+  }
+
+  .prose :where(h1, h2, h3, h4, h5, h6) {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .prose h1 {
+    font-size: 2.25rem;
+  }
+  .prose h2 {
+    font-size: 1.75rem;
+  }
+  .prose h3 {
+    font-size: 1.5rem;
+  }
+
+  .prose a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+
+  .prose img {
+    border-radius: var(--radius);
+  }
+
+  .prose code {
+    font-size: 0.9em;
+    padding: 0.15em 0.25em;
+    border-radius: 0.35em;
+    background: hsl(var(--muted));
+  }
+
+  .prose pre {
+    border-radius: var(--radius);
+    background: hsl(var(--card));
+    padding: 1rem;
   }
 }

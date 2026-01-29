@@ -1,3 +1,5 @@
+import { MetricsOutput } from './metrics';
+
 /**
  * Inference data.
  */
@@ -25,7 +27,7 @@ export interface InferenceData {
   /**
    * Metrics calculated for this frame
    */
-  metrics: Record<string, any> | null;
+  metrics: MetricsOutput | null;
 }
 
 /**

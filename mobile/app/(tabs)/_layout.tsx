@@ -1,38 +1,65 @@
-import '@/global.css';
+import { Tabs } from 'expo-router';
+import { ChartScatter, Aperture, Bolt, HardDriveUpload, MapPin } from 'lucide-react-native';
+import { ThemeToggle } from '@/components/theme-toggle';
 
-import { NAV_THEME } from '@/lib/theme';
-import { ThemeProvider } from '@react-navigation/native';
-import { PortalHost } from '@rn-primitives/portal';
-import { Stack, Tabs } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'nativewind';
-import React from 'react';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export default function TabsLayout() {
-  const { colorScheme } = useColorScheme();
-
+export default function TabLayout() {
   return (
-    <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <Stack />
-      <PortalHost />
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        headerRight: () => <ThemeToggle />,
 
-    <Tabs>
+        headerTitleStyle: {
+          marginLeft: 8,
+        },
+
+        headerRightContainerStyle: {
+          paddingRight: 12,
+        },
+      }}>
       <Tabs.Screen
-        name="settings"
+        name="insights/index"
         options={{
-          headerTitle: 'settings',
-          headerLeft: () => <></>
+          title: 'Insights',
+          tabBarIcon: ({ color, size }) => <ChartScatter color={color} size={size} />,
         }}
-        />
+      />
+
+      <Tabs.Screen
+        name="maps/index"
+        options={{
+          title: 'Maps',
+          tabBarIcon: ({ color, size }) => <MapPin color={color} size={size} />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Monitor',
+          tabBarIcon: ({ color, size }) => <Aperture color={color} size={size} />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="uploads"
+        options={{
+          title: 'Uploads',
+          tabBarIcon: ({ color, size }) => <HardDriveUpload color={color} size={size} />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="settings/index"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => <Bolt color={color} size={size} />,
+        }}
+      />
+
+      {/* Hidden compartments from tab navigation: */}
+      <Tabs.Screen name="settings/api-urls" options={{ href: null }} />
+      <Tabs.Screen name="insights/session/[sessionId]" options={{ href: null }} />
     </Tabs>
-
-    </ThemeProvider>
-
   );
 }

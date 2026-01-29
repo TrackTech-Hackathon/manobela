@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 
 from aiortc import (
@@ -78,6 +79,49 @@ async def create_peer_connection(
         @channel.on("message")
         def on_message(message):
             logger.info("Data channel message from %s: %s", client_id, message)
+            payload = None
+
+            if isinstance(message, (bytes, bytearray)):
+                try:
+                    message = message.decode("utf-8")
+                except Exception:
+                    logger.warning("Failed to decode data channel message from %s", client_id)
+                    return
+
+            if isinstance(message, str):
+                try:
+                    payload = json.loads(message)
+                except json.JSONDecodeError:
+                    return
+
+            if isinstance(payload, dict) and payload.get("type") == "monitoring-control":
+                action = payload.get("action")
+                if action == "pause":
+                    connection_manager.processing_paused[client_id] = True
+                    connection_manager.processing_reset[client_id] = False
+                    logger.info("Paused frame processing for %s", client_id)
+                elif action == "resume":
+                    connection_manager.processing_paused[client_id] = False
+                    connection_manager.processing_reset[client_id] = True
+                    logger.info("Resumed frame processing for %s", client_id)
+                else:
+                    logger.warning(
+                        "Unknown monitoring control action from %s: %s",
+                        client_id,
+                        action,
+                    )
+            try:
+                payload = message
+                if isinstance(payload, bytes):
+                    payload = payload.decode("utf-8")
+                data = json.loads(payload)
+            except (TypeError, ValueError, UnicodeDecodeError):
+                logger.debug("Ignoring non-JSON data channel message from %s", client_id)
+                return
+
+            if data.get("type") == "head_pose_recalibrate":
+                logger.info("Head pose recalibration requested by %s", client_id)
+                connection_manager.request_head_pose_recalibration(client_id)
 
     @pc.on("icecandidate")
     async def on_icecandidate(candidate):

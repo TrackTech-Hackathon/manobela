@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 import cv2
+from aiortc.mediastreams import MediaStreamError
 
 from app.core.config import settings
 from app.models.inference import InferenceData, Resolution
@@ -20,7 +21,7 @@ from app.services.face_landmarks import ESSENTIAL_LANDMARKS
 from app.services.metrics.frame_context import FrameContext
 from app.services.metrics.metric_manager import MetricManager
 from app.services.object_detector import ObjectDetector
-from app.services.smoother import Smoother
+from app.services.smoother import SequenceSmoother
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ TARGET_FPS = max(1, settings.target_fps)
 TARGET_INTERVAL_SEC = 1 / TARGET_FPS
 MAX_WIDTH = 480
 RENDER_LANDMARKS_FULL = False  # Option to render all landmarks or only essential ones
+MAX_DATA_CHANNEL_BUFFER = 1_000_000  # bytes
 
 # Dedicated thread pool for CPU-bound frame processing
 executor = ThreadPoolExecutor(max_workers=min(os.cpu_count() or 4, 4))
@@ -40,7 +42,7 @@ def process_video_frame(
     face_landmarker: FaceLandmarker,
     object_detector: ObjectDetector,
     metric_manager: MetricManager,
-    smoother: Smoother,
+    smoother: SequenceSmoother,
 ) -> InferenceData:
     """
     Process a single video frame.
@@ -91,15 +93,46 @@ async def process_video_frames(
     """
     frame_count = 0
     processed_frames = 0
+    dropped_messages = 0
     start_time = time.perf_counter()
-    last_process_time = time.perf_counter()
+    last_process_time = 0.0
     metric_manager = MetricManager()
-    smoother = Smoother()
+    smoother = SequenceSmoother(alpha=0.8, max_missing=5)
 
     data_channel_retries = 0
     MAX_DATA_CHANNEL_RETRIES = 10
+    # Keep only the most recent frame to avoid backlog-induced latency.
+    frame_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+    reader_task: asyncio.Task | None = None
+
+    async def _read_frames() -> None:
+        while True:
+            if stop_processing.is_set():
+                break
+            if client_id not in connection_manager.peer_connections:
+                break
+            try:
+                frame = await track.recv()
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                logger.exception("Frame receive failed for %s", client_id)
+                await asyncio.sleep(0)
+                continue
+
+            if frame_queue.full():
+                try:
+                    frame_queue.get_nowait()
+                except asyncio.QueueEmpty:
+                    pass
+
+            try:
+                frame_queue.put_nowait(frame)
+            except asyncio.QueueFull:
+                pass
 
     try:
+        reader_task = asyncio.create_task(_read_frames())
         while True:
             if stop_processing.is_set():
                 logger.info("Stop signal received for %s", client_id)
@@ -110,33 +143,33 @@ async def process_video_frames(
                 break
 
             try:
-                frame = await track.recv()
+                try:
+                    frame = await asyncio.wait_for(frame_queue.get(), timeout=0.5)
+                except asyncio.TimeoutError:
+                    continue
+
+                now = time.perf_counter()
+                if now - last_process_time < TARGET_INTERVAL_SEC:
+                    continue
+                last_process_time = now
+
                 if not frame:
                     logger.info("Frame is empty for %s", client_id)
                     break
 
+                if connection_manager.processing_reset.get(client_id, False):
+                    metric_manager = MetricManager()
+                    smoother = SequenceSmoother(alpha=0.8, max_missing=5)
+                    frame_count = 0
+                    processed_frames = 0
+                    start_time = time.perf_counter()
+                    last_process_time = time.perf_counter()
+                    connection_manager.processing_reset[client_id] = False
+
                 frame_count += 1
-
-                # Schedule frame processing at a fixed interval to avoid drift.
-                # The next processing time is derived from the previous scheduled time,
-                # not the actual processing completion time.
-                next_process_time = last_process_time + TARGET_INTERVAL_SEC
-                sleep_duration = next_process_time - time.perf_counter()
-
-                if sleep_duration > 0:
-                    # Yield control until the scheduled processing time
-                    await asyncio.sleep(sleep_duration)
-                else:
-                    # Processing took longer than the target interval;
-                    # skip sleeping to prevent accumulating delay
-                    logger.debug(
-                        "Client %s: Processing is behind schedule by %.2f ms",
-                        client_id,
-                        -sleep_duration * 1000,
-                    )
-
-                # Advance schedule to maintain cadence
-                last_process_time = next_process_time
+                if connection_manager.processing_paused.get(client_id, False):
+                    last_process_time = time.perf_counter()
+                    continue
 
                 # Get data channel
                 channel = connection_manager.data_channels.get(client_id)
@@ -153,6 +186,20 @@ async def process_video_frames(
                     continue
                 else:
                     data_channel_retries = 0
+
+                buffered_amount = getattr(channel, "bufferedAmount", 0)
+                if buffered_amount > MAX_DATA_CHANNEL_BUFFER:
+                    dropped_messages += 1
+                    if dropped_messages % 50 == 0:
+                        logger.warning(
+                            "Client %s: Data channel buffer high (%d bytes); dropped %d messages",
+                            client_id,
+                            buffered_amount,
+                            dropped_messages,
+                        )
+                    continue
+                if connection_manager.consume_head_pose_recalibration(client_id):
+                    metric_manager.reset_head_pose_baseline()
 
                 # Convert frame to numpy array
                 img = frame.to_ndarray(format="bgr24")
@@ -212,6 +259,10 @@ async def process_video_frames(
                 logger.info("Frame processing cancelled for %s", client_id)
                 raise  # MUST propagate cancellation
 
+            except MediaStreamError:
+                logger.info("Video track ended for %s", client_id)
+                break
+
             except Exception:
                 logger.exception("Non-fatal frame processing error for %s", client_id)
                 await asyncio.sleep(0)  # yield control
@@ -226,3 +277,9 @@ async def process_video_frames(
 
     finally:
         logger.info("Frame processing ended for %s", client_id)
+        if reader_task:
+            reader_task.cancel()
+            try:
+                await reader_task
+            except asyncio.CancelledError:
+                pass
