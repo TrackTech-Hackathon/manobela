@@ -42,7 +42,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="uploads"
+        name="uploads/index"
         options={{
           title: 'Uploads',
           tabBarIcon: ({ color, size }) => <HardDriveUpload color={color} size={size} />,
