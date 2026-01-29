@@ -163,6 +163,8 @@ export const sessionLogger = {
       return null;
     }
 
+    const frames = videoResult.frames ?? [];
+
     const sessionId = uuid.v4();
     const startedAt = Date.now();
     const durationMs = Math.round(videoResult.video_metadata.duration_sec * 1000);
@@ -180,28 +182,38 @@ export const sessionLogger = {
           sessionType: 'upload',
         } as NewSession);
 
-        // Process frames and create metrics
+        // Process frames and create metrics (throttled to match live interval)
         const metricsToInsert: NewMetric[] = [];
+        const framesWithTime = frames
+          .map((frame) => {
+            const timestampMatch = frame.timestamp.match(/(\d+):(\d+):(\d+)\.(\d+)/);
+            if (!timestampMatch) return null;
+            const hours = parseInt(timestampMatch[1], 10);
+            const minutes = parseInt(timestampMatch[2], 10);
+            const seconds = parseInt(timestampMatch[3], 10);
+            const milliseconds = parseInt(timestampMatch[4], 10);
+            const timestampSec = hours * 3600 + minutes * 60 + seconds + milliseconds / 1000;
+            return { frame, timestampMs: startedAt + timestampSec * 1000 };
+          })
+          .filter(
+            (entry): entry is { frame: (typeof videoResult.frames)[number]; timestampMs: number } =>
+              entry !== null
+          )
+          .sort((a, b) => a.timestampMs - b.timestampMs);
 
-        for (const frame of videoResult.frames) {
+        let lastLoggedAtMs = -Infinity;
+
+        for (const { frame, timestampMs } of framesWithTime) {
           if (!frame.metrics) continue;
+          if (timestampMs - lastLoggedAtMs < LOG_INTERVAL_MS) continue;
 
+          lastLoggedAtMs = timestampMs;
           const m = frame.metrics as any;
-          // Parse frame timestamp (format: "HH:MM:SS.mmm")
-          const timestampMatch = frame.timestamp.match(/(\d+):(\d+):(\d+)\.(\d+)/);
-          if (!timestampMatch) continue;
-
-          const hours = parseInt(timestampMatch[1], 10);
-          const minutes = parseInt(timestampMatch[2], 10);
-          const seconds = parseInt(timestampMatch[3], 10);
-          const milliseconds = parseInt(timestampMatch[4], 10);
-          const timestampSec = hours * 3600 + minutes * 60 + seconds + milliseconds / 1000;
-          const timestamp = startedAt + timestampSec * 1000;
 
           metricsToInsert.push({
             id: uuid.v4(),
             sessionId,
-            timestamp: Math.round(timestamp),
+            timestamp: Math.round(timestampMs),
 
             faceMissing: m.face_missing ?? false,
 
