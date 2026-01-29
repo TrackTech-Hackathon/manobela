@@ -80,7 +80,6 @@ def process_uploaded_video(
     target_interval = 1.0 / max(1, target_fps)
 
     try:
-
         while True:
             ret, frame = cap.read()
             if not ret:
@@ -90,8 +89,7 @@ def process_uploaded_video(
             timestamp_sec = (
                 timestamp_ms / 1000.0
                 if timestamp_ms and timestamp_ms > 0
-                else (cap.get(cv2.CAP_PROP_POS_FRAMES) or 0.0)
-                / source_fps
+                else (cap.get(cv2.CAP_PROP_POS_FRAMES) or 0.0) / source_fps
                 if source_fps > 0
                 else last_timestamp_sec + target_interval
             )

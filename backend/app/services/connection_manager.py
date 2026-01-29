@@ -67,7 +67,9 @@ class ConnectionManager:
             if not ws:
                 return
 
-            logger.info("Session expired for %s after %d seconds", client_id, SESSION_TTL_SEC)
+            logger.info(
+                "Session expired for %s after %d seconds", client_id, SESSION_TTL_SEC
+            )
             await ws.close(code=4000, reason="Session expired")
         except asyncio.CancelledError:
             return

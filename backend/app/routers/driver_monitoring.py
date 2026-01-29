@@ -47,9 +47,14 @@ RATE_LIMIT_WINDOW_SEC = 60
 ALLOWED_VIDEO_EXTENSIONS = {".mp4", ".mov"}
 _last_upload_by_ip: dict[str, float] = {}
 
+
 class ConnectionsResponse(BaseModel):
-    active_connections: int = Field(..., description="Number of active WebSocket connections")
-    peer_connections: int = Field(..., description="Number of active RTCPeerConnections")
+    active_connections: int = Field(
+        ..., description="Number of active WebSocket connections"
+    )
+    peer_connections: int = Field(
+        ..., description="Number of active RTCPeerConnections"
+    )
     data_channels: int = Field(..., description="Number of active WebRTC DataChannels")
     frame_tasks: int = Field(..., description="Number of active frame-processing tasks")
 
@@ -205,7 +210,9 @@ async def process_video_upload(
                     break
                 total_size += len(chunk)
                 if total_size > MAX_UPLOAD_SIZE_BYTES:
-                    raise HTTPException(status_code=413, detail="File exceeds size limit.")
+                    raise HTTPException(
+                        status_code=413, detail="File exceeds size limit."
+                    )
                 temp_file.write(chunk)
 
         loop = asyncio.get_running_loop()
