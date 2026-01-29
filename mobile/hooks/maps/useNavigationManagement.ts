@@ -1,12 +1,6 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import type { OSMViewRef } from 'expo-osm-sdk';
+import type { OSMViewRef, Route, RouteStep } from 'expo-osm-sdk';
 import type { Coordinate } from '@/types/maps';
-
-interface Route {
-  coordinates: Coordinate[];
-  distance: number;
-  duration: number;
-}
 
 interface NavigationState {
   isNavigating: boolean;
@@ -189,33 +183,43 @@ export const useNavigationManagement = ({
   const turnInstructions = useMemo(() => {
     if (!route) return [];
 
-    const routeWithSteps = route as Route & {
-      steps?: { instruction?: string; name?: string }[];
-      instructions?: string[];
-    };
-
-    if (Array.isArray(routeWithSteps.steps) && routeWithSteps.steps.length > 0) {
-      return routeWithSteps.steps.map(
-        (step, index) => step.instruction || step.name || `Step ${index + 1}`
-      );
-    }
-
-    if (Array.isArray(routeWithSteps.instructions) && routeWithSteps.instructions.length > 0) {
-      return routeWithSteps.instructions;
+    if (Array.isArray(route.steps) && route.steps.length > 0) {
+      return route.steps as RouteStep[];
     }
 
     const totalCoordinates = route.coordinates.length;
-    if (totalCoordinates < 2) return ['Continue to destination'];
+    if (totalCoordinates < 2) {
+      return [
+        {
+          instruction: 'Continue to destination',
+          distance: 0,
+          duration: 0,
+          coordinate: route.coordinates[0] || { latitude: 0, longitude: 0 },
+        },
+      ] as RouteStep[];
+    }
 
     const targetSteps = Math.min(12, Math.max(4, Math.floor(totalCoordinates / 10)));
     const stepSize = Math.max(1, Math.floor(totalCoordinates / targetSteps));
-    const instructions: string[] = [];
+    const instructions: RouteStep[] = [];
 
     for (let i = 0; i < totalCoordinates - 1; i += stepSize) {
-      instructions.push(getNextTurnInstruction(i));
+      instructions.push({
+        instruction: getNextTurnInstruction(i),
+        distance: calculateDistance(route.coordinates[i], route.coordinates[i + 1]),
+        duration: 0,
+        coordinate: route.coordinates[i],
+      });
     }
 
-    return instructions.length > 0 ? instructions : ['Continue to destination'];
+    return instructions.length > 0 ? instructions : [
+      {
+        instruction: 'Continue to destination',
+        distance: 0,
+        duration: 0,
+        coordinate: route.coordinates[route.coordinates.length - 1],
+      },
+    ];
   }, [route, getNextTurnInstruction]);
 
   // Handle location update during navigation
