@@ -159,8 +159,7 @@ export const useUploadPlayback = ({
     });
   }, [activeFrame, playbackPositionMs, showOverlays, holdMs]);
 
-  const overlayResolution =
-    overlaySnapshot?.resolution ?? result?.video_metadata?.resolution ?? null;
+  const overlayResolution = result?.video_metadata?.resolution ?? null;
   const overlayLandmarks = showOverlays ? (overlaySnapshot?.landmarks ?? null) : null;
   const overlayDetections = showOverlays ? (overlaySnapshot?.detections ?? null) : null;
   const canRenderOverlay =

@@ -49,7 +49,6 @@ export default function UploadsScreen() {
     overlayDetections,
     overlayResolution,
     canRenderOverlay,
-    hasOverlayData,
     activeFrame,
   } = useUploadPlayback({
     result,
@@ -86,7 +85,6 @@ export default function UploadsScreen() {
         {result && (
           <>
             <UploadPlayback
-              result={result}
               selectedVideoUri={selectedVideo?.uri}
               player={player}
               playbackAspectRatio={playbackAspectRatio}
@@ -96,7 +94,6 @@ export default function UploadsScreen() {
               overlayDetections={overlayDetections}
               overlayResolution={overlayResolution}
               canRenderOverlay={canRenderOverlay}
-              hasOverlayData={hasOverlayData}
               showOverlays={showOverlays}
               onToggleOverlays={setShowOverlays}
               faceMissing={

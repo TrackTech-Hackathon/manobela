@@ -6,12 +6,6 @@ import { OverlayToggleButton } from '@/components/overlay-toggle-button';
 import { FaceMissingIndicator } from '@/components/face-missing-indicator';
 
 interface UploadPlaybackProps {
-  result: {
-    video_metadata: {
-      fps: number;
-      resolution: { width: number; height: number };
-    };
-  };
   selectedVideoUri?: string;
   player: any;
   playbackAspectRatio: number;
@@ -21,14 +15,12 @@ interface UploadPlaybackProps {
   overlayDetections?: unknown;
   overlayResolution?: { width: number; height: number } | null;
   canRenderOverlay: boolean;
-  hasOverlayData: boolean;
   showOverlays: boolean;
   onToggleOverlays: (show: boolean) => void;
   faceMissing?: boolean;
 }
 
 export function UploadPlayback({
-  result,
   selectedVideoUri,
   player,
   playbackAspectRatio,
@@ -38,7 +30,6 @@ export function UploadPlayback({
   overlayDetections,
   overlayResolution,
   canRenderOverlay,
-  hasOverlayData,
   showOverlays,
   onToggleOverlays,
   faceMissing = false,
