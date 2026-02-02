@@ -74,7 +74,7 @@ export function FeaturesSection() {
             darkSrc="/feature-1-dark.png"
             alt="Driver monitoring visualization"
             direction="left"
-            className="text-xs text-muted"
+            className="text-xs text-muted max-w-sm mx-auto lg:max-w-md"
           />
 
           {/* Right Content */}
@@ -133,7 +133,7 @@ export function FeaturesSection() {
             darkSrc="/feature-2-dark.png"
             alt="Insights and configurable tools"
             direction="right"
-            className="order-1 lg:order-2 text-xs text-muted"
+            className="order-1 lg:order-2 text-xs text-muted max-w-sm mx-auto lg:max-w-md"
           />
         </div>
       </div>
