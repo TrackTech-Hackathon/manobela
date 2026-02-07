@@ -1,8 +1,8 @@
 'use client';
 
 import { Eye, Zap, Smartphone, ShieldCheck, BarChart3, Map, Upload, Sliders } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Image3D } from '@/components/image-3d';
+import Image from 'next/image';
 
 const mainFeatures = [
   {
@@ -69,12 +69,14 @@ export function FeaturesSection() {
         {/* First Feature Section */}
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-8 xl:gap-16 mb-24">
           {/* Left Image */}
-          <Image3D
-            lightSrc="/feature-1-light.png"
-            darkSrc="/feature-1-dark.png"
-            alt="Driver monitoring visualization"
-            direction="left"
-            className="text-xs text-muted max-w-sm mx-auto lg:max-w-md"
+          <Image
+            src="/feature-1.png"
+            alt="Manobela Feature 1"
+            width={800}
+            height={800}
+            sizes="100vw"
+            className="w-full h-auto max-w-sm mx-auto lg:max-w-md -scale-x-100 text-muted text-xs"
+            style={{ height: 'auto' }}
           />
 
           {/* Right Content */}
@@ -128,12 +130,14 @@ export function FeaturesSection() {
           </div>
 
           {/* Right Image */}
-          <Image3D
-            lightSrc="/feature-2-light.png"
-            darkSrc="/feature-2-dark.png"
-            alt="Insights and configurable tools"
-            direction="right"
-            className="order-1 lg:order-2 text-xs text-muted max-w-sm mx-auto lg:max-w-md"
+          <Image
+            src="/feature-2.png"
+            alt="Manobela Feature 2"
+            width={800}
+            height={800}
+            sizes="100vw"
+            className="order-1 lg:order-2 w-full h-auto max-w-sm mx-auto lg:max-w-md text-muted text-xs"
+            style={{ height: 'auto' }}
           />
         </div>
       </div>
