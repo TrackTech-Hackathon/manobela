@@ -27,12 +27,36 @@ const instructions = {
   apple: ['The Apple App Store version is planned.', 'Check back here once it becomes available.'],
 };
 
-export default function DownloadPage() {
-  const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0';
+// Fetch the latest GitHub release at build/render time
+async function fetchLatestRelease() {
+  try {
+    const res = await fetch(
+      'https://api.github.com/repos/popcorn-prophets/manobela/releases/latest',
+      {
+        // This tells Next.js to cache the response and revalidate every hour
+        next: { revalidate: 3600 },
+      }
+    );
 
-  const apkUrl =
-    process.env.NEXT_PUBLIC_APK_URL ||
-    'https://github.com/popcorn-prophets/manobela/releases/latest';
+    if (!res.ok) throw new Error('GitHub API failed');
+
+    const data = await res.json();
+    return {
+      appVersion: data.tag_name,
+      apkUrl: data.assets?.[0]?.browser_download_url,
+    };
+  } catch {
+    return {
+      appVersion: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
+      apkUrl:
+        process.env.NEXT_PUBLIC_APK_URL ||
+        'https://github.com/popcorn-prophets/manobela/releases/latest',
+    };
+  }
+}
+
+export default async function DownloadPage() {
+  const { appVersion, apkUrl } = await fetchLatestRelease();
 
   const googlePlayUrl =
     process.env.NEXT_PUBLIC_GOOGLE_PLAY_URL ||
