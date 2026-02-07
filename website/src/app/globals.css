@@ -170,3 +170,16 @@ html {
 .animate-logo-scroll:hover {
   animation-play-state: paused;
 }
+
+@keyframes goldShimmer {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-gold-shimmer {
+  animation: goldShimmer 2.5s linear infinite;
+}

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { CardDecorator } from '@/components/ui/card-decorator';
-import { Github, Linkedin, Globe } from 'lucide-react';
+import { Github, Linkedin, Globe, Coffee } from 'lucide-react';
 
 const team = [
   {
@@ -16,9 +16,9 @@ const team = [
     image: '',
     fallback: 'AM',
     social: {
-      linkedin: '#',
-      github: '#',
-      website: '#',
+      linkedin: 'https://www.linkedin.com/in/andrian-maagma',
+      github: 'https://github.com/andrianllmm',
+      website: 'https://andrianllmm.github.io',
     },
   },
   {
@@ -29,8 +29,8 @@ const team = [
     image: '',
     fallback: 'DC',
     social: {
-      linkedin: '#',
-      github: '#',
+      linkedin: 'https://www.linkedin.com/in/dejel-cyrus-de-asis-9567172b0',
+      github: 'https://github.com/dejely',
       website: '#',
     },
   },
@@ -43,7 +43,7 @@ const team = [
     fallback: 'JR',
     social: {
       linkedin: '#',
-      github: '#',
+      github: 'https://github.com/Romyr05',
       website: '#',
     },
   },
@@ -55,8 +55,8 @@ const team = [
     image: '',
     fallback: 'JT',
     social: {
-      linkedin: '#',
-      github: '#',
+      linkedin: 'https://www.linkedin.com/in/joshua-ticot-291670318',
+      github: 'https://github.com/Hiagyl',
       website: '#',
     },
   },
@@ -68,12 +68,15 @@ const team = [
     image: '',
     fallback: 'JM',
     social: {
-      linkedin: '#',
-      github: '#',
+      linkedin: 'https://www.linkedin.com/in/jemarco-briz-52419a327',
+      github: 'https://github.com/Jmbriz123',
       website: '#',
     },
   },
 ];
+
+const buymeacoffeeUrl =
+  process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL || 'https://www.buymeacoffee.com/popcornprophets';
 
 export function TeamSection() {
   return (
@@ -84,10 +87,19 @@ export function TeamSection() {
           <Badge variant="outline" className="mb-4">
             Our Team
           </Badge>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">Meet our team</h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
+            Meet Popcorn Prophets
+          </h2>
           <p className="text-lg text-muted-foreground mb-8">
             We are a small team building practical technology to improve road safety.
           </p>
+          {/* Sponsor Button */}
+          <Button size="lg" className="text-base cursor-pointer" asChild>
+            <a href={`${buymeacoffeeUrl}`} target="_blank" rel="noopener noreferrer">
+              <Coffee className="h-4 w-4" />
+              Buy us a coffee :)
+            </a>
+          </Button>
         </div>
 
         {/* Team Grid */}
