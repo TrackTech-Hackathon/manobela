@@ -16,9 +16,9 @@ const team = [
     image: '',
     fallback: 'AM',
     social: {
-      linkedin: '#',
-      github: '#',
-      website: '#',
+      linkedin: 'https://www.linkedin.com/in/andrian-maagma',
+      github: 'https://github.com/andrianllmm',
+      website: 'https://andrianllmm.github.io',
     },
   },
   {
@@ -29,8 +29,8 @@ const team = [
     image: '',
     fallback: 'DC',
     social: {
-      linkedin: '#',
-      github: '#',
+      linkedin: 'https://www.linkedin.com/in/dejel-cyrus-de-asis-9567172b0',
+      github: 'https://github.com/dejely',
       website: '#',
     },
   },
@@ -43,7 +43,7 @@ const team = [
     fallback: 'JR',
     social: {
       linkedin: '#',
-      github: '#',
+      github: 'https://github.com/Romyr05',
       website: '#',
     },
   },
@@ -55,8 +55,8 @@ const team = [
     image: '',
     fallback: 'JT',
     social: {
-      linkedin: '#',
-      github: '#',
+      linkedin: 'https://www.linkedin.com/in/joshua-ticot-291670318',
+      github: 'https://github.com/Hiagyl',
       website: '#',
     },
   },
@@ -68,8 +68,8 @@ const team = [
     image: '',
     fallback: 'JM',
     social: {
-      linkedin: '#',
-      github: '#',
+      linkedin: 'https://www.linkedin.com/in/jemarco-briz-52419a327',
+      github: 'https://github.com/Jmbriz123',
       website: '#',
     },
   },
