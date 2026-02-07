@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, DownloadIcon, Play, Star } from 'lucide-react';
+import { DownloadIcon, Play, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DotPattern } from '@/components/dot-pattern';
@@ -22,9 +22,18 @@ export function HeroSection() {
         <div className="mx-auto max-w-4xl text-center">
           {/* Announcement Badge */}
           <div className="mb-8 flex justify-center">
-            <Badge variant="outline" className="px-4 py-2 border-foreground">
-              <Star className="w-3 h-3 mr-2 fill-current" />
-              v1.0.0 is live!
+            <Badge
+              variant="outline"
+              className="px-4 py-2 border-amber-400/50 text-amber-400/80 relative overflow-hidden font-semibold z-0">
+              <Trophy className="w-4 h-4 mr-1 fill-current" />
+
+              <span className="relative z-10">Won the TrackTech Hackathon 2026!</span>
+
+              {/* Golden shimmer overlay */}
+              <span
+                className="absolute top-0 left-0 w-[200%] h-full
+                     bg-gradient-to-r from-transparent via-amber-200/20 via-amber-400/10 via-amber-200/20 to-transparent
+                     animate-gold-shimmer pointer-events-none"></span>
             </Badge>
           </div>
 
